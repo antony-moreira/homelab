@@ -1,0 +1,57 @@
+*.dll
+*.exe
+.DS_Store
+example.tf
+terraform.tfplan
+terraform.tfstate
+bin/
+modules-dev/
+/pkg/
+website/.vagrant
+website/.bundle
+website/build
+website/node_modules
+.vagrant/
+*.backup
+./*.tfstate
+.terraform/
+*.log
+*.bak
+*~
+.*.swp
+.idea
+*.iml
+*.test
+*.iml
+
+website/vendor
+
+# Test exclusions
+!command/test-fixtures/**/*.tfstate
+!command/test-fixtures/**/.terraform/
+
+node_modules/
+*.zip
+tfplan.out
+plan.tfout
+
+# Dependencies
+/node_modules
+
+# Production
+/build
+
+# Generated files
+.docusaurus
+.cache-loader
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

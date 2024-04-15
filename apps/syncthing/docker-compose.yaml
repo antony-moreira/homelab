@@ -1,0 +1,20 @@
+---
+version: "3.5"
+services:
+  syncthing:
+    image: lscr.io/linuxserver/syncthing:latest
+    container_name: syncthing
+    hostname: syncthing #optional
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /opt/syncthing/config:/config
+      - /srv/dev-disk-by-uuid-e53d5d99-1d0e-43b7-80b8-fc227ec518ee/Homelab/SYNCTHING:/sync
+    ports:
+      - 8384:8384
+      - 22000:22000/tcp
+      - 22000:22000/udp
+      - 21027:21027/udp
+    restart: unless-stopped
