@@ -58,4 +58,16 @@ services:
     ports:
       - 6767:6767
     restart: unless-stopped
-    
+
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=1001
+      - PGID=100
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /opt/overseerr/config:/config
+    ports:
+      - 5055:5055
+    restart: unless-stopped
