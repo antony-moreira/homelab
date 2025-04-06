@@ -1,0 +1,4 @@
+[all]
+%{ for index in app.index ~}
+${ app.vm_name[index] } ansible_host=${ app.ip_address[index]} ansible_user=${ app.user[index] }
+%{ endfor ~}

@@ -1,12 +1,36 @@
-version: '3.8' 
+--- 
 
 services:
+  homarr:
+    container_name: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - /opt/homarr/configs:/app/data/configs
+      - /opt/homarr/icons:/app/public/icons
+      - /opt/homarr/data:/data
+    ports:
+      - '7575:7575'
+
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /opt/overseerr/config:/config
+    ports:
+      - 5055:5055
+    restart: unless-stopped      
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
-      - PUID=1001
-      - PGID=100
+      - PUID=1000
+      - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
       - /opt/prowlarr:/config
@@ -18,13 +42,13 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     environment:
-      - PUID=1001
-      - PGID=100
+      - PUID=1000
+      - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
       - /opt/radarr:/config
-      - /srv/dev-disk-by-uuid-e53d5d99-1d0e-43b7-80b8-fc227ec518ee/Homelab/MEDIA_CENTER/Filmes:/movies 
-      - /srv/dev-disk-by-uuid-e53d5d99-1d0e-43b7-80b8-fc227ec518ee/Homelab/MEDIA_CENTER/Downloads:/downloads 
+      - /mnt/homelab-ssd-thor/MEDIA_CENTER/Filmes:/movies 
+      - /mnt/homelab-ssd-thor/MEDIA_CENTER/Downloads:/downloads 
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -33,13 +57,13 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
-      - PUID=1001
-      - PGID=100
+      - PUID=1000
+      - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
       - /opt/sonarr:/config
-      - /srv/dev-disk-by-uuid-e53d5d99-1d0e-43b7-80b8-fc227ec518ee/Homelab/MEDIA_CENTER/Series:/tv #optional
-      - /srv/dev-disk-by-uuid-e53d5d99-1d0e-43b7-80b8-fc227ec518ee/Homelab/MEDIA_CENTER/Downloads:/downloads 
+      - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Series:/tv #optional
+      - /mnt/homelab-ssd-thor/MEDIA_CENTER/Downloads:/downloads 
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -48,26 +72,30 @@ services:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
     environment:
-      - PUID=1001
-      - PGID=100
+      - PUID=1000
+      - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
       - /opt/bazarr:/config
-      - /srv/dev-disk-by-uuid-e53d5d99-1d0e-43b7-80b8-fc227ec518ee/Homelab/MEDIA_CENTER/Filmes:/movies #optional
-      - /srv/dev-disk-by-uuid-e53d5d99-1d0e-43b7-80b8-fc227ec518ee/Homelab/MEDIA_CENTER/Series:/tv #optional
+      - /mnt/homelab-ssd-thor/MEDIA_CENTER/Filmes:/movies #optional
+      - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Series:/tv #optional
     ports:
       - 6767:6767
     restart: unless-stopped
 
-  overseerr:
-    image: lscr.io/linuxserver/overseerr:latest
-    container_name: overseerr
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
     environment:
-      - PUID=1001
-      - PGID=100
-      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8080
     volumes:
-      - /opt/overseerr/config:/config
+      - /opt/qbittorrent:/config
+      - /mnt/homelab-ssd-thor/MEDIA_CENTER/Downloads:/downloads 
     ports:
-      - 5055:5055
-    restart: unless-stopped
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped    

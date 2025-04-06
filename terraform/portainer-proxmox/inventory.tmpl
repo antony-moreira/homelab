@@ -1,0 +1,5 @@
+[all]
+%{ for index in portainer.index ~}
+${ portainer.vm_name[index] } ansible_host=${ portainer.ip_address[index]} ansible_user=${ portainer.user[index] }
+%{ endfor ~}
+

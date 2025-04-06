@@ -1,19 +1,18 @@
 ---
-version: "3.5"
 services:
   plex:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
     network_mode: host
     environment:
-      - PUID=1001
-      - PGID=100
+      - PUID=1000
+      - PGID=1000
       - TZ=America/Sao_Paulo
       - VERSION=docker
     volumes:
       - /opt/plex:/config
-      - /srv/dev-disk-by-uuid-e53d5d99-1d0e-43b7-80b8-fc227ec518ee/Homelab/MEDIA_CENTER/Filmes:/data/movies
-      - /srv/dev-disk-by-uuid-e53d5d99-1d0e-43b7-80b8-fc227ec518ee/Homelab/MEDIA_CENTER/Series:/data/tv 
+      - /mnt/homelab-ssd-thor/MEDIA_CENTER/Filmes:/data/movies
+      - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Series:/data/tv 
 #     - PATH-TO-ARCHIVES:/data/movies
     devices:
       - /dev/dri:/dev/dri 

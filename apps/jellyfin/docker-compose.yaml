@@ -1,5 +1,4 @@
-version: '3.5'
-
+---
 services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
@@ -11,16 +10,16 @@ services:
       - 1900:1900/udp #optional   
     volumes:
       - /opt/jellyfin:/config
-      - PATH-TO-ARCHIVES:/data/tvshows
-      - PATH-TO-ARCHIVES:/data/movies 
-      - PATH-TO-ARCHIVES:/data/videos  
-#    - /srv/dev-disk-by-uuid-e53d5d99-1d0e-43b7-80b8-fc227ec518ee/Homelab:/data/tvshows   
+      - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Series:/data/tvshows
+      - /mnt/homelab-ssd-thor/MEDIA_CENTER/Filmes:/data/movies 
+      - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Videos:/data/videos  
+#    - /mnt/homelab-ssd-thor:/data/tvshows   
     environment:
-      - PUID=1001
-      - PGID=100
+      - PUID=1000
+      - PGID=1000
       - TZ=America/Sao_Paulo
 #      - JELLYFIN_PublishedServerUrl=192.168.0.5 #optional
-    devices:
-      - /dev/dri:/dev/dri 
+#    devices:
+#      - /dev/dri:/dev/dri 
     restart: unless-stopped
 
