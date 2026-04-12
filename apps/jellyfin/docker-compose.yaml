@@ -10,10 +10,10 @@ services:
       - 1900:1900/udp #optional   
     volumes:
       - /home/antony/apps/jellyfin:/config
-      - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Series:/data/tvshows
-      - /mnt/homelab-ssd-thor/MEDIA_CENTER/Filmes:/data/movies 
-      - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Videos:/data/videos  
-#    - /mnt/homelab-ssd-thor:/data/tvshows   
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/data/tvshows
+      - /mnt/homelab-hd-interno/MEDIA_CENTER/Filmes:/data/movies 
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Videos:/data/videos  
+#    - /mnt/homelab-hd-interno:/data/tvshows   
     environment:
       - PUID=1000
       - PGID=1000
