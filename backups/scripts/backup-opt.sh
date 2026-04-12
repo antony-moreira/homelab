@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Caminhos e variáveis
-PASTA_ORIGEM="/opt"
+PASTA_ORIGEM="/home/antony/apps"
 NOME_ARQUIVO="opt_backup_$(date +%Y%m%d_%H%M%S).tar"
 PASTA_TEMP="/home/homelab/backup"
 PASTA_DESTINO="/srv/dev-disk-by-uuid-8e6337d5-7ccf-45db-9be7-8308e9737ca7/Homelab/SYNCTHING"
@@ -64,5 +64,5 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-log "Backup da pasta '/opt' concluído com sucesso!"
+log "Backup da pasta '/home/antony/apps' concluído com sucesso!"
 log "Arquivo criado: $PASTA_DESTINO/$NOME_ARQUIVO"

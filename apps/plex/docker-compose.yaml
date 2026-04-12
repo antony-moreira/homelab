@@ -10,7 +10,7 @@ services:
       - TZ=America/Sao_Paulo
       - VERSION=docker
     volumes:
-      - /opt/plex:/config
+      - /home/antony/apps/plex:/config
       - /mnt/homelab-ssd-thor/MEDIA_CENTER/Filmes:/data/movies
       - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Series:/data/tv 
 #     - PATH-TO-ARCHIVES:/data/movies

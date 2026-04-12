@@ -5,7 +5,7 @@ services:
     image: louislam/uptime-kuma
     container_name: uptime-kuma
     volumes:
-      - /opt/uptime-kuma:/app/data
+      - /home/antony/apps/uptime-kuma:/app/data
     ports:
       - "3001:3001"  # <Host Port>:<Container Port>
     restart: always

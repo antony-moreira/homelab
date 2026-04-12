@@ -7,9 +7,9 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
-      - /opt/homarr/configs:/app/data/configs
-      - /opt/homarr/icons:/app/public/icons
-      - /opt/homarr/data:/data
+      - /home/antony/apps/homarr/configs:/app/data/configs
+      - /home/antony/apps/homarr/icons:/app/public/icons
+      - /home/antony/apps/homarr/data:/data
     ports:
       - '7575:7575'
 
@@ -21,7 +21,7 @@ services:
       - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
-      - /opt/overseerr/config:/config
+      - /home/antony/apps/overseerr/config:/config
     ports:
       - 5055:5055
     restart: unless-stopped      
@@ -33,7 +33,7 @@ services:
       - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
-      - /opt/prowlarr:/config
+      - /home/antony/apps/prowlarr:/config
     ports:
       - 9696:9696
     restart: unless-stopped
@@ -46,7 +46,7 @@ services:
       - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
-      - /opt/radarr:/config
+      - /home/antony/apps/radarr:/config
       - /mnt/homelab-ssd-thor/MEDIA_CENTER/Filmes:/movies 
       - /mnt/homelab-ssd-thor/MEDIA_CENTER/Downloads:/downloads 
     ports:
@@ -61,7 +61,7 @@ services:
       - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
-      - /opt/sonarr:/config
+      - /home/antony/apps/sonarr:/config
       - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Series:/tv #optional
       - /mnt/homelab-ssd-thor/MEDIA_CENTER/Downloads:/downloads 
     ports:
@@ -76,7 +76,7 @@ services:
       - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
-      - /opt/bazarr:/config
+      - /home/antony/apps/bazarr:/config
       - /mnt/homelab-ssd-thor/MEDIA_CENTER/Filmes:/movies #optional
       - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Series:/tv #optional
     ports:
@@ -92,7 +92,7 @@ services:
       - TZ=Etc/UTC
       - WEBUI_PORT=8080
     volumes:
-      - /opt/qbittorrent:/config
+      - /home/antony/apps/qbittorrent:/config
       - /mnt/homelab-ssd-thor/MEDIA_CENTER/Downloads:/downloads 
     ports:
       - 8080:8080

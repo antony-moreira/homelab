@@ -11,5 +11,5 @@ services:
       - '81:81'
       - '443:443'
     volumes:
-      - /opt/nginx-proxy-manager/data:/data
-      - /opt/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+      - /home/antony/apps/nginx-proxy-manager/data:/data
+      - /home/antony/apps/nginx-proxy-manager/letsencrypt:/etc/letsencrypt

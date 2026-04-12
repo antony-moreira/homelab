@@ -31,8 +31,8 @@ services:
     container_name: prometheus 
     restart: unless-stopped 
     volumes: 
-      - /opt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml 
-      - /opt/prometheus:/prometheus 
+      - /home/antony/apps/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml 
+      - /home/antony/apps/prometheus:/prometheus 
     command: 
       - '--config.file=/etc/prometheus/prometheus.yml' 
       - '--storage.tsdb.path=/prometheus' 
@@ -51,8 +51,8 @@ services:
       - 3000:3000 
     restart: unless-stopped 
     volumes: 
-      - /opt/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources 
-      - /opt/grafana:/var/lib/grafana 
+      - /home/antony/apps/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources 
+      - /home/antony/apps/grafana:/var/lib/grafana 
     networks: 
       - monitoring 
   cadvisor: 

@@ -17,7 +17,7 @@ services:
       - "139:139"
       - "445:445"
     volumes:
-      - /opt/timemachine:/opt/timemachine
+      - /home/antony/apps/timemachine:/home/antony/apps/timemachine
     tmpfs:
       - /run/samba
     ulimits:

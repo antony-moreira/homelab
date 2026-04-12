@@ -9,7 +9,7 @@ services:
       - 7359:7359/udp #optional
       - 1900:1900/udp #optional   
     volumes:
-      - /opt/jellyfin:/config
+      - /home/antony/apps/jellyfin:/config
       - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Series:/data/tvshows
       - /mnt/homelab-ssd-thor/MEDIA_CENTER/Filmes:/data/movies 
       - /mnt/homelab-hd-externo-thor/MEDIA_CENTER/Videos:/data/videos  
