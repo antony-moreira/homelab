@@ -14,6 +14,6 @@ services:
       - /mnt/media/MEDIA_CENTER/Filmes:/data/movies
       - /mnt/media/MEDIA_CENTER/Series:/data/tv 
 #     - PATH-TO-ARCHIVES:/data/movies
-    devices:
-      - /dev/dri:/dev/dri 
+#    devices:
+#      - /dev/dri:/dev/dri 
     restart: unless-stopped
