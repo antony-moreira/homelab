@@ -11,7 +11,7 @@ services:
       - /home/antony/apps/jellyfin:/config
       - /mnt/media/MEDIA_CENTER/Series:/data/tvshows
       - /mnt/media/MEDIA_CENTER/Filmes:/data/movies
-      - /mnt/media/MEDIA_CENTER/Videos:/data/videos
+#      - /mnt/media/MEDIA_CENTER/Videos:/data/videos
     environment:
       - PUID=1000
       - PGID=1000
