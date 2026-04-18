@@ -1,25 +1,19 @@
----
 services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
     ports:
       - 8096:8096
-      - 8920:8920 #optional
-      - 7359:7359/udp #optional
-      - 1900:1900/udp #optional   
+      - 8920:8920
+      - 7359:7359/udp
+      - 1900:1900/udp
     volumes:
       - /home/antony/apps/jellyfin:/config
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/data/tvshows
-      - /mnt/homelab-hd-interno/MEDIA_CENTER/Filmes:/data/movies 
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Videos:/data/videos  
-#    - /mnt/homelab-hd-interno:/data/tvshows   
+      - /mnt/media/Series:/data/tvshows
+      - /mnt/media/Filmes:/data/movies
+      - /mnt/media/Videos:/data/videos
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Sao_Paulo
-#      - JELLYFIN_PublishedServerUrl=192.168.0.5 #optional
-#    devices:
-#      - /dev/dri:/dev/dri 
     restart: unless-stopped
-
