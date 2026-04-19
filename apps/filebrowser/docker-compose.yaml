@@ -1,0 +1,14 @@
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    user: "1000:1000"
+    ports:
+      - "8080:80"
+    volumes:
+      - /home:/srv
+      - /home/antony/apps/filebrowser/config/filebrowser.db:/database.db
+      - /home/antony/apps/filebrowser/config/settings.json:/config/settings.json
+    environment:
+      - TZ=America/Sao_Paulo
+    restart: unless-stopped
