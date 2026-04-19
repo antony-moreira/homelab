@@ -4,7 +4,7 @@ services:
     container_name: filebrowser
     user: "1000:1000"
     ports:
-      - "8080:80"
+      - "8181:80"
     volumes:
       - /home:/srv
       - /home/antony/apps/filebrowser/config/filebrowser.db:/database.db
