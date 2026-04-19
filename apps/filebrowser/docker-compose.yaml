@@ -7,8 +7,8 @@ services:
       - "8181:80"
     volumes:
       - /home/antony:/srv
-      - /home/antony/apps/filebrowser/config/filebrowser.db:/database.db
-      - /home/antony/apps/filebrowser/config/settings.json:/config/settings.json
+      - /home/antony/apps/filebrowser/config:/config
+      - /home/antony/apps/filebrowser/database.db:/database.db
     environment:
       - TZ=America/Sao_Paulo
     restart: unless-stopped
