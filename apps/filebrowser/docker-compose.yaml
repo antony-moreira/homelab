@@ -6,7 +6,7 @@ services:
     ports:
       - "8181:80"
     volumes:
-      - /home:/srv
+      - /home/antony:/srv
       - /home/antony/apps/filebrowser/config/filebrowser.db:/database.db
       - /home/antony/apps/filebrowser/config/settings.json:/config/settings.json
     environment:
