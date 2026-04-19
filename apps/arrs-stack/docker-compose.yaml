@@ -47,8 +47,8 @@ services:
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/radarr:/config
-      - /mnt/homelab-hd-filmes/MEDIA_CENTER/Filmes:/movies 
-      - /mnt/media/MEDIA_CENTER/Downloads:/downloads 
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Filmes:/movies 
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads 
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -62,8 +62,8 @@ services:
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/sonarr:/config
-      - /mnt/homelab-hd-series/MEDIA_CENTER/Series:/tv #optional
-      - /mnt/media/MEDIA_CENTER/Downloads:/downloads 
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/tv #optional
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads 
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -77,8 +77,8 @@ services:
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/bazarr:/config
-      - /mnt/homelab-hd-filmes/MEDIA_CENTER/Filmes:/movies #optional
-      - /mnt/homelab-hd-series/MEDIA_CENTER/Series:/tv #optional
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Filmes:/movies #optional
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/tv #optional
     ports:
       - 6767:6767
     restart: unless-stopped
@@ -93,7 +93,7 @@ services:
       - WEBUI_PORT=8080
     volumes:
       - /home/antony/apps/qbittorrent:/config
-      - /mnt/media/MEDIA_CENTER/Downloads:/downloads 
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads 
     ports:
       - 8080:8080
       - 6881:6881
