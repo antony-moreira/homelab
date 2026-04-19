@@ -11,8 +11,8 @@ services:
       - VERSION=docker
     volumes:
       - /home/antony/apps/plex:/config
-      - /mnt/media/MEDIA_CENTER/Filmes:/data/movies
-      - /mnt/media/MEDIA_CENTER/Series:/data/tv 
+      - /mnt/homelab-hd-filmes/MEDIA_CENTER/Filmes:/data/movies
+      - /mnt/homelab-hd-series/MEDIA_CENTER/Series:/data/tv 
 #     - PATH-TO-ARCHIVES:/data/movies
 #    devices:
 #      - /dev/dri:/dev/dri 

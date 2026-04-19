@@ -47,7 +47,7 @@ services:
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/radarr:/config
-      - /mnt/media/MEDIA_CENTER/Filmes:/movies 
+      - /mnt/homelab-hd-filmes/MEDIA_CENTER/Filmes:/movies 
       - /mnt/media/MEDIA_CENTER/Downloads:/downloads 
     ports:
       - 7878:7878
@@ -62,7 +62,7 @@ services:
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/sonarr:/config
-      - /mnt/media/MEDIA_CENTER/Series:/tv #optional
+      - /mnt/homelab-hd-series/MEDIA_CENTER/Series:/tv #optional
       - /mnt/media/MEDIA_CENTER/Downloads:/downloads 
     ports:
       - 8989:8989
@@ -77,8 +77,8 @@ services:
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/bazarr:/config
-      - /mnt/media/MEDIA_CENTER/Filmes:/movies #optional
-      - /mnt/media/MEDIA_CENTER/Series:/tv #optional
+      - /mnt/homelab-hd-filmes/MEDIA_CENTER/Filmes:/movies #optional
+      - /mnt/homelab-hd-series/MEDIA_CENTER/Series:/tv #optional
     ports:
       - 6767:6767
     restart: unless-stopped
