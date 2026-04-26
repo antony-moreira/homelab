@@ -1,0 +1,28 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/antony/apps/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - /home/antony/apps/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - /home/antony/apps/traefik/acme.json:/acme.json
+
+    labels:
+      - "traefik.enable=true"
+
+      # Dashboard
+      - "traefik.http.routers.traefik.rule=Host(`traefik.tonho.app.br`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.middlewares=auth"

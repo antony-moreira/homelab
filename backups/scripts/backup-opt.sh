@@ -2,8 +2,8 @@
 
 # Caminhos e variáveis
 PASTA_ORIGEM="/home/antony/apps"
-NOME_ARQUIVO="opt_backup_$(date +%Y%m%d_%H%M%S).tar"
-PASTA_TEMP="/home/homelab/backup"
+NOME_ARQUIVO="apps_backup_$(date +%Y%m%d_%H%M%S).tar"
+PASTA_TEMP="/home/antony/backup"
 PASTA_DESTINO="/srv/dev-disk-by-uuid-8e6337d5-7ccf-45db-9be7-8308e9737ca7/Homelab/SYNCTHING"
 LOG_FILE="/var/log/backup_opt.log"
 TAR_LOG="/var/log/backup_tar.log"

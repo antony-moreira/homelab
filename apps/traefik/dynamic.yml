@@ -1,0 +1,10 @@
+http:
+  middlewares:
+    auth:
+      basicAuth:
+        users:
+          - "${TRAEFIK_BASIC_AUTH}"
+
+    redirect-https:
+      redirectScheme:
+        scheme: https
