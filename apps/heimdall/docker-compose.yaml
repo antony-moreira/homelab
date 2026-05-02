@@ -3,6 +3,8 @@ services:
   heimdall:
     image: lscr.io/linuxserver/heimdall:latest
     container_name: heimdall
+    networks:
+      - traefik
     environment:
       - PUID=1000
       - PGID=1000
@@ -12,4 +14,15 @@ services:
     ports:
       - 81:80
       - 446:443
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.heimdall.rule=Host(`${HEIMDALL_DOMAIN}`)"
+      - "traefik.http.routers.heimdall.entrypoints=websecure"
+      - "traefik.http.routers.heimdall.tls=true"
+      - "traefik.http.routers.heimdall.tls.certresolver=cloudflare"
+      - "traefik.http.services.heimdall.loadbalancer.server.port=80"
     restart: unless-stopped
+
+networks:
+  traefik:
+    external: true

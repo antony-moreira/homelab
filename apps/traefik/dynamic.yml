@@ -4,3 +4,59 @@ http:
       redirectScheme:
         scheme: https
         permanent: true
+
+  serversTransports:
+    insecure:
+      insecureSkipVerify: true
+
+  routers:
+    proxmox-leon:
+      rule: "Host(`{{ env "PROXMOX_LEON_DOMAIN" }}`)"
+      entrypoints: [websecure, tunnel]
+      tls:
+        certResolver: cloudflare
+      service: proxmox-leon
+
+    proxmox-claire:
+      rule: "Host(`{{ env "PROXMOX_CLAIRE_DOMAIN" }}`)"
+      entrypoints: [websecure, tunnel]
+      tls:
+        certResolver: cloudflare
+      service: proxmox-claire
+
+    adguard:
+      rule: "Host(`{{ env "ADGUARD_DOMAIN" }}`)"
+      entrypoints: [websecure]
+      tls:
+        certResolver: cloudflare
+      service: adguard
+
+    adguard-secondary:
+      rule: "Host(`{{ env "ADGUARD_SECONDARY_DOMAIN" }}`)"
+      entrypoints: [websecure]
+      tls:
+        certResolver: cloudflare
+      service: adguard-secondary
+
+  services:
+    proxmox-leon:
+      loadBalancer:
+        serversTransport: insecure
+        servers:
+          - url: "https://{{ env "PROXMOX_LEON_IP" }}:8006"
+
+    proxmox-claire:
+      loadBalancer:
+        serversTransport: insecure
+        servers:
+          - url: "https://{{ env "PROXMOX_CLAIRE_IP" }}:8006"
+
+    adguard:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "ADGUARD_IP" }}:{{ env "ADGUARD_PORT" }}"
+
+    adguard-secondary:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "ADGUARD_SECONDARY_IP" }}:{{ env "ADGUARD_PORT" }}"

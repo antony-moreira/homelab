@@ -1,21 +1,32 @@
---- 
+---
 
 services:
   homarr:
     container_name: homarr
     image: ghcr.io/ajnart/homarr:latest
     restart: unless-stopped
+    networks:
+      - traefik
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - /var/run/docker.sock:/var/run/docker.sock
       - /home/antony/apps/homarr/configs:/app/data/configs
       - /home/antony/apps/homarr/icons:/app/public/icons
       - /home/antony/apps/homarr/data:/data
     ports:
       - '7575:7575'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homarr.rule=Host(`${HOMARR_DOMAIN}`)"
+      - "traefik.http.routers.homarr.entrypoints=websecure"
+      - "traefik.http.routers.homarr.tls=true"
+      - "traefik.http.routers.homarr.tls.certresolver=cloudflare"
+      - "traefik.http.services.homarr.loadbalancer.server.port=7575"
 
   overseerr:
     image: lscr.io/linuxserver/overseerr:latest
     container_name: overseerr
+    networks:
+      - traefik
     environment:
       - PUID=1000
       - PGID=1000
@@ -24,10 +35,26 @@ services:
       - /home/antony/apps/overseerr/config:/config
     ports:
       - 5055:5055
-    restart: unless-stopped      
+    labels:
+      - "traefik.enable=true"
+      # acesso local HTTPS direto (porta 443)
+      - "traefik.http.routers.overseerr.rule=Host(`${OVERSEERR_DOMAIN}`)"
+      - "traefik.http.routers.overseerr.entrypoints=websecure"
+      - "traefik.http.routers.overseerr.tls=true"
+      - "traefik.http.routers.overseerr.tls.certresolver=cloudflare"
+      - "traefik.http.routers.overseerr.service=overseerr"
+      # acesso via cloudflare tunnel (porta 8080)
+      - "traefik.http.routers.overseerr-tunnel.rule=Host(`${OVERSEERR_DOMAIN}`)"
+      - "traefik.http.routers.overseerr-tunnel.entrypoints=tunnel"
+      - "traefik.http.routers.overseerr-tunnel.service=overseerr"
+      - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
+    restart: unless-stopped
+
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
+    networks:
+      - traefik
     environment:
       - PUID=1000
       - PGID=1000
@@ -36,56 +63,92 @@ services:
       - /home/antony/apps/prowlarr:/config
     ports:
       - 9696:9696
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`${PROWLARR_DOMAIN}`)"
+      - "traefik.http.routers.prowlarr.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr.tls=true"
+      - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     restart: unless-stopped
-    
+
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
+    networks:
+      - traefik
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/radarr:/config
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Filmes:/movies 
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads 
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Filmes:/movies
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads
     ports:
       - 7878:7878
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`${RADARR_DOMAIN}`)"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+      - "traefik.http.routers.radarr.tls=true"
+      - "traefik.http.routers.radarr.tls.certresolver=cloudflare"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
     restart: unless-stopped
-    
+
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
+    networks:
+      - traefik
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/sonarr:/config
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/tv #optional
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads 
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/tv
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads
     ports:
       - 8989:8989
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`${SONARR_DOMAIN}`)"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.routers.sonarr.tls=true"
+      - "traefik.http.routers.sonarr.tls.certresolver=cloudflare"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
     restart: unless-stopped
-    
+
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
+    networks:
+      - traefik
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/bazarr:/config
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Filmes:/movies #optional
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/tv #optional
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Filmes:/movies
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/tv
     ports:
       - 6767:6767
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bazarr.rule=Host(`${BAZARR_DOMAIN}`)"
+      - "traefik.http.routers.bazarr.entrypoints=websecure"
+      - "traefik.http.routers.bazarr.tls=true"
+      - "traefik.http.routers.bazarr.tls.certresolver=cloudflare"
+      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
     restart: unless-stopped
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
+    networks:
+      - traefik
     environment:
       - PUID=1000
       - PGID=1000
@@ -93,9 +156,20 @@ services:
       - WEBUI_PORT=8080
     volumes:
       - /home/antony/apps/qbittorrent:/config
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads 
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads
     ports:
       - 8080:8080
       - 6881:6881
       - 6881:6881/udp
-    restart: unless-stopped    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qbittorrent.rule=Host(`${QBITTORRENT_DOMAIN}`)"
+      - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent.tls=true"
+      - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
+    restart: unless-stopped
+
+networks:
+  traefik:
+    external: true

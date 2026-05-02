@@ -3,7 +3,9 @@ services:
   syncthing:
     image: lscr.io/linuxserver/syncthing:latest
     container_name: syncthing
-    hostname: syncthing #optional
+    hostname: syncthing
+    networks:
+      - traefik
     environment:
       - PUID=1000
       - PGID=1000
@@ -16,4 +18,15 @@ services:
       - 22000:22000/tcp
       - 22000:22000/udp
       - 21027:21027/udp
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.syncthing.rule=Host(`${SYNCTHING_DOMAIN}`)"
+      - "traefik.http.routers.syncthing.entrypoints=websecure"
+      - "traefik.http.routers.syncthing.tls=true"
+      - "traefik.http.routers.syncthing.tls.certresolver=cloudflare"
+      - "traefik.http.services.syncthing.loadbalancer.server.port=8384"
     restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
