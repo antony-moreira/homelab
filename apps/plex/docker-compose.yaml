@@ -3,7 +3,8 @@ services:
   plex:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
-    network_mode: host
+    networks:
+      - traefik
     environment:
       - PUID=1000
       - PGID=1000
@@ -12,8 +13,25 @@ services:
     volumes:
       - /home/antony/apps/plex:/config
       - /mnt/homelab-hd-externo/MEDIA_CENTER/Filmes:/data/movies
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/data/tv 
+      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/data/tv
 #     - PATH-TO-ARCHIVES:/data/movies
 #    devices:
-#      - /dev/dri:/dev/dri 
+#      - /dev/dri:/dev/dri
+    labels:
+      - "traefik.enable=true"
+      # acesso local HTTPS direto (porta 443)
+      - "traefik.http.routers.plex.rule=Host(`${PLEX_DOMAIN}`)"
+      - "traefik.http.routers.plex.entrypoints=websecure"
+      - "traefik.http.routers.plex.tls=true"
+      - "traefik.http.routers.plex.tls.certresolver=cloudflare"
+      - "traefik.http.routers.plex.service=plex"
+      # acesso via cloudflare tunnel (porta 8080)
+      - "traefik.http.routers.plex-tunnel.rule=Host(`${PLEX_DOMAIN}`)"
+      - "traefik.http.routers.plex-tunnel.entrypoints=tunnel"
+      - "traefik.http.routers.plex-tunnel.service=plex"
+      - "traefik.http.services.plex.loadbalancer.server.port=32400"
     restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
