@@ -12,6 +12,7 @@ services:
 
     environment:
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+      - TRAEFIK_LOCAL_DOMAIN=${TRAEFIK_LOCAL_DOMAIN}
       - PROXMOX_LEON_IP=${PROXMOX_LEON_IP}
       - PROXMOX_CLAIRE_IP=${PROXMOX_CLAIRE_IP}
       - ADGUARD_IP=${ADGUARD_IP}
@@ -31,7 +32,7 @@ services:
     labels:
       - "traefik.enable=true"
 
-      - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DOMAIN}`) || Host(`${TRAEFIK_LOCAL_DOMAIN}`)"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
