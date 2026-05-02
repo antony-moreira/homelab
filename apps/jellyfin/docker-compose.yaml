@@ -2,9 +2,10 @@ services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
+    networks:
+      - traefik
     ports:
       - 8096:8096
-      - 8920:8920
       - 7359:7359/udp
       - 1900:1900/udp
     volumes:
@@ -16,4 +17,21 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/Sao_Paulo
+    labels:
+      - "traefik.enable=true"
+      # acesso local HTTPS direto (porta 443)
+      - "traefik.http.routers.jellyfin.rule=Host(`${JELLYFIN_DOMAIN}`)"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.tls=true"
+      - "traefik.http.routers.jellyfin.tls.certresolver=cloudflare"
+      - "traefik.http.routers.jellyfin.service=jellyfin"
+      # acesso via cloudflare tunnel (porta 8080)
+      - "traefik.http.routers.jellyfin-tunnel.rule=Host(`${JELLYFIN_DOMAIN}`)"
+      - "traefik.http.routers.jellyfin-tunnel.entrypoints=tunnel"
+      - "traefik.http.routers.jellyfin-tunnel.service=jellyfin"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
     restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
