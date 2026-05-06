@@ -4,4 +4,4 @@ services:
     container_name: adguardhome-sync
     restart: unless-stopped
     volumes:
-      - /home/antony/apps/adguardhome-sync/adguardhome-sync.yaml:/root/.adguardhome-sync.yaml:ro
+      - /home/antony/apps/adguardhome-sync/adguardhome-sync.yaml:/config/adguardhome-sync.yaml:ro
