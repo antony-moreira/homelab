@@ -1,0 +1,12 @@
+origin:
+  url: http://192.168.3.100
+  username: CHANGE_ME
+  password: CHANGE_ME
+
+replicas:
+  - url: http://192.168.3.200
+    username: CHANGE_ME
+    password: CHANGE_ME
+
+cron: "0 * * * *"
+runOnStart: true

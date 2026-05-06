@@ -3,3 +3,4 @@
 .env.all
 acme.json
 rclone.conf
+adguardhome-sync.yaml
