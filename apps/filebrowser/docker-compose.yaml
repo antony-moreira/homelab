@@ -15,7 +15,7 @@ services:
       - TZ=America/Sao_Paulo
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.filebrowser.rule=Host(`${FILEBROWSER_DOMAIN}`)"
+      - "traefik.http.routers.filebrowser.rule=Host(`${FILEBROWSER_DOMAIN}`) || Host(`${FILEBROWSER_HOME_DOMAIN}`)"
       - "traefik.http.routers.filebrowser.entrypoints=websecure"
       - "traefik.http.routers.filebrowser.tls=true"
       - "traefik.http.routers.filebrowser.tls.certresolver=cloudflare"

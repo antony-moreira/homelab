@@ -22,7 +22,7 @@ services:
     labels:
       - "traefik.enable=true"
       # acesso local HTTPS direto (porta 443)
-      - "traefik.http.routers.plex.rule=Host(`${PLEX_DOMAIN}`)"
+      - "traefik.http.routers.plex.rule=Host(`${PLEX_DOMAIN}`) || Host(`${PLEX_HOME_DOMAIN}`)"
       - "traefik.http.routers.plex.entrypoints=websecure"
       - "traefik.http.routers.plex.tls=true"
       - "traefik.http.routers.plex.tls.certresolver=cloudflare"

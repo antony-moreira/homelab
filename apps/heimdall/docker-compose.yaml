@@ -16,7 +16,7 @@ services:
       - 446:443
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.heimdall.rule=Host(`${HEIMDALL_DOMAIN}`)"
+      - "traefik.http.routers.heimdall.rule=Host(`${HEIMDALL_DOMAIN}`) || Host(`${HEIMDALL_HOME_DOMAIN}`)"
       - "traefik.http.routers.heimdall.entrypoints=websecure"
       - "traefik.http.routers.heimdall.tls=true"
       - "traefik.http.routers.heimdall.tls.certresolver=cloudflare"

@@ -13,7 +13,7 @@ services:
       - /home/antony/apps:/home/antony/apps
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dockhand.rule=Host(`${DOCKHAND_DOMAIN}`)"
+      - "traefik.http.routers.dockhand.rule=Host(`${DOCKHAND_DOMAIN}`) || Host(`${DOCKHAND_HOME_DOMAIN}`)"
       - "traefik.http.routers.dockhand.entrypoints=websecure"
       - "traefik.http.routers.dockhand.tls=true"
       - "traefik.http.routers.dockhand.tls.certresolver=cloudflare"

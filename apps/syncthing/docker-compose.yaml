@@ -20,7 +20,7 @@ services:
       - 21027:21027/udp
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.syncthing.rule=Host(`${SYNCTHING_DOMAIN}`)"
+      - "traefik.http.routers.syncthing.rule=Host(`${SYNCTHING_DOMAIN}`) || Host(`${SYNCTHING_HOME_DOMAIN}`)"
       - "traefik.http.routers.syncthing.entrypoints=websecure"
       - "traefik.http.routers.syncthing.tls=true"
       - "traefik.http.routers.syncthing.tls.certresolver=cloudflare"

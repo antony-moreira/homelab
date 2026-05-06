@@ -16,7 +16,7 @@ services:
       - '7575:7575'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.homarr.rule=Host(`${HOMARR_DOMAIN}`)"
+      - "traefik.http.routers.homarr.rule=Host(`${HOMARR_DOMAIN}`) || Host(`${HOMARR_HOME_DOMAIN}`)"
       - "traefik.http.routers.homarr.entrypoints=websecure"
       - "traefik.http.routers.homarr.tls=true"
       - "traefik.http.routers.homarr.tls.certresolver=cloudflare"
@@ -38,7 +38,7 @@ services:
     labels:
       - "traefik.enable=true"
       # acesso local HTTPS direto (porta 443)
-      - "traefik.http.routers.overseerr.rule=Host(`${OVERSEERR_DOMAIN}`)"
+      - "traefik.http.routers.overseerr.rule=Host(`${OVERSEERR_DOMAIN}`) || Host(`${OVERSEERR_HOME_DOMAIN}`)"
       - "traefik.http.routers.overseerr.entrypoints=websecure"
       - "traefik.http.routers.overseerr.tls=true"
       - "traefik.http.routers.overseerr.tls.certresolver=cloudflare"
@@ -65,7 +65,7 @@ services:
       - 9696:9696
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.prowlarr.rule=Host(`${PROWLARR_DOMAIN}`)"
+      - "traefik.http.routers.prowlarr.rule=Host(`${PROWLARR_DOMAIN}`) || Host(`${PROWLARR_HOME_DOMAIN}`)"
       - "traefik.http.routers.prowlarr.entrypoints=websecure"
       - "traefik.http.routers.prowlarr.tls=true"
       - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
@@ -89,7 +89,7 @@ services:
       - 7878:7878
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`${RADARR_DOMAIN}`)"
+      - "traefik.http.routers.radarr.rule=Host(`${RADARR_DOMAIN}`) || Host(`${RADARR_HOME_DOMAIN}`)"
       - "traefik.http.routers.radarr.entrypoints=websecure"
       - "traefik.http.routers.radarr.tls=true"
       - "traefik.http.routers.radarr.tls.certresolver=cloudflare"
@@ -113,7 +113,7 @@ services:
       - 8989:8989
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`${SONARR_DOMAIN}`)"
+      - "traefik.http.routers.sonarr.rule=Host(`${SONARR_DOMAIN}`) || Host(`${SONARR_HOME_DOMAIN}`)"
       - "traefik.http.routers.sonarr.entrypoints=websecure"
       - "traefik.http.routers.sonarr.tls=true"
       - "traefik.http.routers.sonarr.tls.certresolver=cloudflare"
@@ -137,7 +137,7 @@ services:
       - 6767:6767
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.bazarr.rule=Host(`${BAZARR_DOMAIN}`)"
+      - "traefik.http.routers.bazarr.rule=Host(`${BAZARR_DOMAIN}`) || Host(`${BAZARR_HOME_DOMAIN}`)"
       - "traefik.http.routers.bazarr.entrypoints=websecure"
       - "traefik.http.routers.bazarr.tls=true"
       - "traefik.http.routers.bazarr.tls.certresolver=cloudflare"
@@ -163,7 +163,7 @@ services:
       - 6881:6881/udp
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.qbittorrent.rule=Host(`${QBITTORRENT_DOMAIN}`)"
+      - "traefik.http.routers.qbittorrent.rule=Host(`${QBITTORRENT_DOMAIN}`) || Host(`${QBITTORRENT_HOME_DOMAIN}`)"
       - "traefik.http.routers.qbittorrent.entrypoints=websecure"
       - "traefik.http.routers.qbittorrent.tls=true"
       - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"

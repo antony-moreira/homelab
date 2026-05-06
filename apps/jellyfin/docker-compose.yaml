@@ -20,7 +20,7 @@ services:
     labels:
       - "traefik.enable=true"
       # acesso local HTTPS direto (porta 443)
-      - "traefik.http.routers.jellyfin.rule=Host(`${JELLYFIN_DOMAIN}`)"
+      - "traefik.http.routers.jellyfin.rule=Host(`${JELLYFIN_DOMAIN}`) || Host(`${JELLYFIN_HOME_DOMAIN}`)"
       - "traefik.http.routers.jellyfin.entrypoints=websecure"
       - "traefik.http.routers.jellyfin.tls=true"
       - "traefik.http.routers.jellyfin.tls.certresolver=cloudflare"

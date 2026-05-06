@@ -12,7 +12,7 @@ services:
       - "3001:3001"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.uptime-kuma.rule=Host(`${UPTIMEKUMA_DOMAIN}`)"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`${UPTIMEKUMA_DOMAIN}`) || Host(`${UPTIMEKUMA_HOME_DOMAIN}`)"
       - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
       - "traefik.http.routers.uptime-kuma.tls=true"
       - "traefik.http.routers.uptime-kuma.tls.certresolver=cloudflare"
