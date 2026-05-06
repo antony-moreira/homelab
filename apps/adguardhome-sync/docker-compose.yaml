@@ -1,0 +1,14 @@
+services:
+  adguardhome-sync:
+    image: ghcr.io/bakito/adguardhome-sync:latest
+    container_name: adguardhome-sync
+    restart: unless-stopped
+    environment:
+      - ORIGIN__URL=http://192.168.3.100
+      - ORIGIN__USERNAME=${ADGUARD_USERNAME}
+      - ORIGIN__PASSWORD=${ADGUARD_PASSWORD}
+      - REPLICA1__URL=http://192.168.3.200
+      - REPLICA1__USERNAME=${ADGUARD_USERNAME}
+      - REPLICA1__PASSWORD=${ADGUARD_PASSWORD}
+      - CRON=0 * * * *
+      - RUNONSTART=true
