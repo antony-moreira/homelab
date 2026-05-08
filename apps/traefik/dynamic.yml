@@ -11,7 +11,7 @@ http:
 
   routers:
     proxmox-leon:
-      rule: "Host(`{{ env "PROXMOX_LEON_DOMAIN" }}`) || Host(`{{ env "PROXMOX_LEON_HOME_DOMAIN" }}`)"
+      rule: "Host(`{{ env "PROXMOX_LEON_DOMAIN" }}`) || Host(`{{ env "PROXMOX_LEON_HOME_DOMAIN" }}`) || Host(`{{ env "PROXMOX_DOMAIN" }}`) || Host(`{{ env "PROXMOX_HOME_DOMAIN" }}`)"
       entrypoints: [websecure, tunnel]
       tls:
         certResolver: cloudflare
