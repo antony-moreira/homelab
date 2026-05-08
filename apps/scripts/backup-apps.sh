@@ -34,7 +34,7 @@ if [ -f "$PASTA_DESTINO/$NOME_ARQUIVO" ]; then
 fi
 
 log "Iniciando backup de $PASTA_ORIGEM..."
-tar -czf "$PASTA_DESTINO/$NOME_ARQUIVO" "${EXCLUIR[@]}" -C "$(dirname "$PASTA_ORIGEM")" "$(basename "$PASTA_ORIGEM")"
+tar --ignore-failed-read -czf "$PASTA_DESTINO/$NOME_ARQUIVO" "${EXCLUIR[@]}" -C "$(dirname "$PASTA_ORIGEM")" "$(basename "$PASTA_ORIGEM")"
 log "Backup criado: $PASTA_DESTINO/$NOME_ARQUIVO ($(du -sh "$PASTA_DESTINO/$NOME_ARQUIVO" | cut -f1))"
 
 # --- Retenção ---
