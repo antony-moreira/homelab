@@ -38,6 +38,18 @@ http:
         certResolver: cloudflare
       service: adguard-secondary
 
+    plex:
+      rule: "Host(`{{ env "PLEX_HOME_DOMAIN" }}`)"
+      entrypoints: [websecure]
+      tls:
+        certResolver: cloudflare
+      service: plex
+
+    plex-tunnel:
+      rule: "Host(`{{ env "PLEX_DOMAIN" }}`)"
+      entrypoints: [tunnel]
+      service: plex
+
   services:
     proxmox-leon:
       loadBalancer:
@@ -60,3 +72,8 @@ http:
       loadBalancer:
         servers:
           - url: "http://{{ env "ADGUARD_SECONDARY_IP" }}:{{ env "ADGUARD_PORT" }}"
+
+    plex:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "PLEX_IP" }}:32400"

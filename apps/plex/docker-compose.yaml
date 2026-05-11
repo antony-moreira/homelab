@@ -3,10 +3,7 @@ services:
   plex:
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
-    networks:
-      - traefik
-    ports:
-      - 32400:32400
+    network_mode: host
     environment:
       - PUID=1000
       - PGID=1000
@@ -19,21 +16,4 @@ services:
 #     - PATH-TO-ARCHIVES:/data/movies
 #    devices:
 #      - /dev/dri:/dev/dri
-    labels:
-      - "traefik.enable=true"
-      # acesso local HTTPS direto (porta 443)
-      - "traefik.http.routers.plex.rule=Host(`${PLEX_DOMAIN}`) || Host(`${PLEX_HOME_DOMAIN}`)"
-      - "traefik.http.routers.plex.entrypoints=websecure"
-      - "traefik.http.routers.plex.tls=true"
-      - "traefik.http.routers.plex.tls.certresolver=cloudflare"
-      - "traefik.http.routers.plex.service=plex"
-      # acesso via cloudflare tunnel (porta 8080)
-      - "traefik.http.routers.plex-tunnel.rule=Host(`${PLEX_DOMAIN}`)"
-      - "traefik.http.routers.plex-tunnel.entrypoints=tunnel"
-      - "traefik.http.routers.plex-tunnel.service=plex"
-      - "traefik.http.services.plex.loadbalancer.server.port=32400"
     restart: unless-stopped
-
-networks:
-  traefik:
-    external: true
