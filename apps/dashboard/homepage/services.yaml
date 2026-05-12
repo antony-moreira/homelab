@@ -1,0 +1,118 @@
+- Media:
+    - Jellyfin:
+        icon: jellyfin.png
+        href: "https://{{HOMEPAGE_VAR_JELLYFIN_HOME_DOMAIN}}"
+        description: Media Server
+        widget:
+          type: jellyfin
+          url: "http://{{HOMEPAGE_VAR_SERVER_IP}}:8096"
+          key: "{{HOMEPAGE_VAR_JELLYFIN_API_KEY}}"
+
+    - Plex:
+        icon: plex.png
+        href: "https://{{HOMEPAGE_VAR_PLEX_HOME_DOMAIN}}"
+        description: Media Server
+
+    - Overseerr:
+        icon: overseerr.png
+        href: "https://{{HOMEPAGE_VAR_OVERSEERR_HOME_DOMAIN}}"
+        description: Requisicoes de midia
+        widget:
+          type: overseerr
+          url: "http://{{HOMEPAGE_VAR_SERVER_IP}}:5055"
+          key: "{{HOMEPAGE_VAR_OVERSEERR_API_KEY}}"
+
+- Downloads:
+    - qBittorrent:
+        icon: qbittorrent.png
+        href: "https://{{HOMEPAGE_VAR_QBITTORRENT_HOME_DOMAIN}}"
+        description: Torrent Client
+        widget:
+          type: qbittorrent
+          url: "http://{{HOMEPAGE_VAR_SERVER_IP}}:8080"
+          username: "{{HOMEPAGE_VAR_QBITTORRENT_USER}}"
+          password: "{{HOMEPAGE_VAR_QBITTORRENT_PASSWORD}}"
+
+    - Sonarr:
+        icon: sonarr.png
+        href: "https://{{HOMEPAGE_VAR_SONARR_HOME_DOMAIN}}"
+        description: Series
+        widget:
+          type: sonarr
+          url: "http://{{HOMEPAGE_VAR_SERVER_IP}}:8989"
+          key: "{{HOMEPAGE_VAR_SONARR_API_KEY}}"
+
+    - Radarr:
+        icon: radarr.png
+        href: "https://{{HOMEPAGE_VAR_RADARR_HOME_DOMAIN}}"
+        description: Filmes
+        widget:
+          type: radarr
+          url: "http://{{HOMEPAGE_VAR_SERVER_IP}}:7878"
+          key: "{{HOMEPAGE_VAR_RADARR_API_KEY}}"
+
+    - Prowlarr:
+        icon: prowlarr.png
+        href: "https://{{HOMEPAGE_VAR_PROWLARR_HOME_DOMAIN}}"
+        description: Indexadores
+        widget:
+          type: prowlarr
+          url: "http://{{HOMEPAGE_VAR_SERVER_IP}}:9696"
+          key: "{{HOMEPAGE_VAR_PROWLARR_API_KEY}}"
+
+    - Bazarr:
+        icon: bazarr.png
+        href: "https://{{HOMEPAGE_VAR_BAZARR_HOME_DOMAIN}}"
+        description: Legendas
+        widget:
+          type: bazarr
+          url: "http://{{HOMEPAGE_VAR_SERVER_IP}}:6767"
+          key: "{{HOMEPAGE_VAR_BAZARR_API_KEY}}"
+
+- Infraestrutura:
+    - Proxmox Leon:
+        icon: proxmox.png
+        href: "https://{{HOMEPAGE_VAR_PROXMOX_LEON_HOME_DOMAIN}}"
+        description: Hypervisor Leon
+        widget:
+          type: proxmox
+          url: "https://{{HOMEPAGE_VAR_PROXMOX_LEON_IP}}:8006"
+          username: "{{HOMEPAGE_VAR_PROXMOX_USER}}"
+          password: "{{HOMEPAGE_VAR_PROXMOX_TOKEN_NAME}}={{HOMEPAGE_VAR_PROXMOX_TOKEN_SECRET}}"
+          node: leon
+
+    - Proxmox Claire:
+        icon: proxmox.png
+        href: "https://{{HOMEPAGE_VAR_PROXMOX_CLAIRE_HOME_DOMAIN}}"
+        description: Hypervisor Claire
+        widget:
+          type: proxmox
+          url: "https://{{HOMEPAGE_VAR_PROXMOX_CLAIRE_IP}}:8006"
+          username: "{{HOMEPAGE_VAR_PROXMOX_USER}}"
+          password: "{{HOMEPAGE_VAR_PROXMOX_TOKEN_NAME}}={{HOMEPAGE_VAR_PROXMOX_TOKEN_SECRET}}"
+          node: claire
+
+    - AdGuard Home:
+        icon: adguard-home.png
+        href: "https://{{HOMEPAGE_VAR_ADGUARD_HOME_DOMAIN}}"
+        description: DNS / Bloqueador de ads
+        widget:
+          type: adguard
+          url: "http://{{HOMEPAGE_VAR_ADGUARD_IP}}:{{HOMEPAGE_VAR_ADGUARD_PORT}}"
+          username: "{{HOMEPAGE_VAR_ADGUARD_USER}}"
+          password: "{{HOMEPAGE_VAR_ADGUARD_PASSWORD}}"
+
+    - Traefik:
+        icon: traefik.png
+        href: "https://{{HOMEPAGE_VAR_TRAEFIK_HOME_DOMAIN}}"
+        description: Reverse Proxy
+
+    - Dockhand:
+        icon: docker.png
+        href: "https://{{HOMEPAGE_VAR_DOCKHAND_HOME_DOMAIN}}"
+        description: Container Manager
+
+    - Filebrowser:
+        icon: filebrowser.png
+        href: "https://{{HOMEPAGE_VAR_FILEBROWSER_HOME_DOMAIN}}"
+        description: File Manager

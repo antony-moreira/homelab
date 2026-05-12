@@ -1,0 +1,79 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    networks:
+      - traefik
+    ports:
+      - 3001:3000
+    volumes:
+      - /home/antony/apps/dashboard/homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - HOMEPAGE_VAR_SERVER_IP=${SERVER_IP}
+      - HOMEPAGE_VAR_SONARR_API_KEY=${SONARR_API_KEY}
+      - HOMEPAGE_VAR_RADARR_API_KEY=${RADARR_API_KEY}
+      - HOMEPAGE_VAR_BAZARR_API_KEY=${BAZARR_API_KEY}
+      - HOMEPAGE_VAR_PROWLARR_API_KEY=${PROWLARR_API_KEY}
+      - HOMEPAGE_VAR_OVERSEERR_API_KEY=${OVERSEERR_API_KEY}
+      - HOMEPAGE_VAR_JELLYFIN_API_KEY=${JELLYFIN_API_KEY}
+      - HOMEPAGE_VAR_QBITTORRENT_USER=${QBITTORRENT_USER}
+      - HOMEPAGE_VAR_QBITTORRENT_PASSWORD=${QBITTORRENT_PASSWORD}
+      - HOMEPAGE_VAR_ADGUARD_IP=${ADGUARD_IP}
+      - HOMEPAGE_VAR_ADGUARD_PORT=${ADGUARD_PORT}
+      - HOMEPAGE_VAR_ADGUARD_USER=${ADGUARD_USER}
+      - HOMEPAGE_VAR_ADGUARD_PASSWORD=${ADGUARD_PASSWORD}
+      - HOMEPAGE_VAR_PROXMOX_LEON_IP=${PROXMOX_LEON_IP}
+      - HOMEPAGE_VAR_PROXMOX_CLAIRE_IP=${PROXMOX_CLAIRE_IP}
+      - HOMEPAGE_VAR_PROXMOX_USER=${PROXMOX_USER}
+      - HOMEPAGE_VAR_PROXMOX_TOKEN_NAME=${PROXMOX_TOKEN_NAME}
+      - HOMEPAGE_VAR_PROXMOX_TOKEN_SECRET=${PROXMOX_TOKEN_SECRET}
+      - HOMEPAGE_VAR_JELLYFIN_HOME_DOMAIN=${JELLYFIN_HOME_DOMAIN}
+      - HOMEPAGE_VAR_PLEX_HOME_DOMAIN=${PLEX_HOME_DOMAIN}
+      - HOMEPAGE_VAR_OVERSEERR_HOME_DOMAIN=${OVERSEERR_HOME_DOMAIN}
+      - HOMEPAGE_VAR_SONARR_HOME_DOMAIN=${SONARR_HOME_DOMAIN}
+      - HOMEPAGE_VAR_RADARR_HOME_DOMAIN=${RADARR_HOME_DOMAIN}
+      - HOMEPAGE_VAR_PROWLARR_HOME_DOMAIN=${PROWLARR_HOME_DOMAIN}
+      - HOMEPAGE_VAR_BAZARR_HOME_DOMAIN=${BAZARR_HOME_DOMAIN}
+      - HOMEPAGE_VAR_QBITTORRENT_HOME_DOMAIN=${QBITTORRENT_HOME_DOMAIN}
+      - HOMEPAGE_VAR_PROXMOX_LEON_HOME_DOMAIN=${PROXMOX_LEON_HOME_DOMAIN}
+      - HOMEPAGE_VAR_PROXMOX_CLAIRE_HOME_DOMAIN=${PROXMOX_CLAIRE_HOME_DOMAIN}
+      - HOMEPAGE_VAR_ADGUARD_HOME_DOMAIN=${ADGUARD_HOME_DOMAIN}
+      - HOMEPAGE_VAR_TRAEFIK_HOME_DOMAIN=${TRAEFIK_HOME_DOMAIN}
+      - HOMEPAGE_VAR_DOCKHAND_HOME_DOMAIN=${DOCKHAND_HOME_DOMAIN}
+      - HOMEPAGE_VAR_FILEBROWSER_HOME_DOMAIN=${FILEBROWSER_HOME_DOMAIN}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homepage.rule=Host(`${HOMEPAGE_DOMAIN}`) || Host(`${HOMEPAGE_HOME_DOMAIN}`)"
+      - "traefik.http.routers.homepage.entrypoints=websecure"
+      - "traefik.http.routers.homepage.tls=true"
+      - "traefik.http.routers.homepage.tls.certresolver=cloudflare"
+      - "traefik.http.services.homepage.loadbalancer.server.port=3000"
+    restart: unless-stopped
+
+  dashdot:
+    image: mauricenino/dashdot:latest
+    container_name: dashdot
+    privileged: true
+    networks:
+      - traefik
+    ports:
+      - 3002:3001
+    volumes:
+      - /:/mnt/host:ro
+    environment:
+      - DASHDOT_OVERRIDE_OS=Ubuntu
+      - DASHDOT_WIDGET_LIST=cpu,ram,storage,network
+      - DASHDOT_ALWAYS_SHOW_PERCENTAGES=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashdot.rule=Host(`${DASHDOT_DOMAIN}`) || Host(`${DASHDOT_HOME_DOMAIN}`)"
+      - "traefik.http.routers.dashdot.entrypoints=websecure"
+      - "traefik.http.routers.dashdot.tls=true"
+      - "traefik.http.routers.dashdot.tls.certresolver=cloudflare"
+      - "traefik.http.services.dashdot.loadbalancer.server.port=3001"
+    restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
