@@ -12,14 +12,14 @@ http:
   routers:
     proxmox-leon:
       rule: "Host(`{{ env "PROXMOX_LEON_DOMAIN" }}`) || Host(`{{ env "PROXMOX_LEON_HOME_DOMAIN" }}`) || Host(`{{ env "PROXMOX_DOMAIN" }}`) || Host(`{{ env "PROXMOX_HOME_DOMAIN" }}`)"
-      entrypoints: [websecure, tunnel]
+      entrypoints: [websecure]
       tls:
         certResolver: cloudflare
       service: proxmox-leon
 
     proxmox-claire:
       rule: "Host(`{{ env "PROXMOX_CLAIRE_DOMAIN" }}`) || Host(`{{ env "PROXMOX_CLAIRE_HOME_DOMAIN" }}`)"
-      entrypoints: [websecure, tunnel]
+      entrypoints: [websecure]
       tls:
         certResolver: cloudflare
       service: proxmox-claire
@@ -45,10 +45,6 @@ http:
         certResolver: cloudflare
       service: plex
 
-    plex-tunnel:
-      rule: "Host(`{{ env "PLEX_DOMAIN" }}`)"
-      entrypoints: [tunnel]
-      service: plex
 
   services:
     proxmox-leon:

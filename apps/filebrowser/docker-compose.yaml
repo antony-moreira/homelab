@@ -9,6 +9,7 @@ services:
       - "8181:80"
     volumes:
       - /home/antony:/srv
+      - /mnt:/srv/mnt
       - /home/antony/apps/filebrowser:/config
       - /home/antony/apps/filebrowser:/database.db
     environment:

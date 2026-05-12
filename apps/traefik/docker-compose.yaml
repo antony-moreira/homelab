@@ -48,11 +48,6 @@ services:
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.middlewares=auth@docker"
 
-      - "traefik.http.routers.traefik-tunnel.rule=Host(`${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.traefik-tunnel.entrypoints=tunnel"
-      - "traefik.http.routers.traefik-tunnel.service=api@internal"
-      - "traefik.http.routers.traefik-tunnel.middlewares=auth@docker"
-
       - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASIC_AUTH}"
 
   cloudflared:
