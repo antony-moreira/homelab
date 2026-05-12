@@ -13,7 +13,7 @@ EXCLUIR=(
 
 MANTER_RECENTES=3
 MANTER_SEMANA_DIAS=7
-RCLONE_CONFIG="/home/antony/apps/rclone/rclone.conf"
+RCLONE_CONFIG_DIR="/home/antony/apps/rclone"
 GDRIVE_DESTINO="gdrive:homelab-backup"
 
 log() {
@@ -80,7 +80,7 @@ log "Retencao aplicada. $kept arquivo(s) mantido(s) localmente."
 log "Sincronizando com Google Drive ($GDRIVE_DESTINO)..."
 if docker run --rm \
   -v "$PASTA_DESTINO":/backup:ro \
-  -v "$RCLONE_CONFIG":/config/rclone/rclone.conf:ro \
+  -v "$RCLONE_CONFIG_DIR":/config/rclone \
   rclone/rclone sync /backup "$GDRIVE_DESTINO" --transfers=2 2>>"$LOG_FILE"; then
   log "Sync Google Drive concluido."
 else
