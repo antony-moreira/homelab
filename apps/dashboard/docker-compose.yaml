@@ -7,7 +7,7 @@ services:
     ports:
       - 3001:3000
     volumes:
-      - /home/antony/apps/dashboard/homepage:/app/config
+      - /home/antony/apps/dockhand/dockhand_data/stacks/Homelab/homepage/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - HOMEPAGE_ALLOWED_HOSTS=${HOMEPAGE_DOMAIN},${HOMEPAGE_HOME_DOMAIN}
