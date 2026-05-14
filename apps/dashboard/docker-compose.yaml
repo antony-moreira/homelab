@@ -10,6 +10,7 @@ services:
       - /home/antony/apps/dashboard/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
+      - HOMEPAGE_ALLOWED_HOSTS=${HOMEPAGE_DOMAIN},${HOMEPAGE_HOME_DOMAIN}
       - HOMEPAGE_VAR_SERVER_IP=${SERVER_IP}
       - HOMEPAGE_VAR_SONARR_API_KEY=${SONARR_API_KEY}
       - HOMEPAGE_VAR_RADARR_API_KEY=${RADARR_API_KEY}
