@@ -12,6 +12,10 @@
         icon: plex.png
         href: "https://{{HOMEPAGE_VAR_PLEX_HOME_DOMAIN}}"
         description: Media Server
+        widget:
+          type: plex
+          url: "http://{{HOMEPAGE_VAR_SERVER_IP}}:32400"
+          key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
 
     - Overseerr:
         icon: overseerr.png
@@ -78,7 +82,7 @@
           type: proxmox
           url: "https://{{HOMEPAGE_VAR_PROXMOX_LEON_IP}}:8006"
           username: "{{HOMEPAGE_VAR_PROXMOX_USER}}"
-          password: "{{HOMEPAGE_VAR_PROXMOX_TOKEN_NAME}}={{HOMEPAGE_VAR_PROXMOX_TOKEN_SECRET}}"
+          password: "{{HOMEPAGE_VAR_PROXMOX_TOKEN_SECRET}}"
           node: leon
 
     - Proxmox Claire:
@@ -89,7 +93,7 @@
           type: proxmox
           url: "https://{{HOMEPAGE_VAR_PROXMOX_CLAIRE_IP}}:8006"
           username: "{{HOMEPAGE_VAR_PROXMOX_USER}}"
-          password: "{{HOMEPAGE_VAR_PROXMOX_TOKEN_NAME}}={{HOMEPAGE_VAR_PROXMOX_TOKEN_SECRET}}"
+          password: "{{HOMEPAGE_VAR_PROXMOX_TOKEN_SECRET}}"
           node: claire
 
     - AdGuard Home:

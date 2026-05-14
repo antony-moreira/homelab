@@ -4,6 +4,7 @@ theme: dark
 color: slate
 headerStyle: clean
 language: pt
+cardBlur: md
 
 layout:
   Media:
