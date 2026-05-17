@@ -45,6 +45,13 @@ http:
         certResolver: cloudflare
       service: plex
 
+    homarr:
+      rule: "Host(`{{ env "HOMARR_DOMAIN" }}`) || Host(`{{ env "HOMARR_HOME_DOMAIN" }}`)"
+      entrypoints: [websecure]
+      tls:
+        certResolver: cloudflare
+      service: homarr
+
 
   services:
     proxmox-leon:
@@ -73,3 +80,8 @@ http:
       loadBalancer:
         servers:
           - url: "http://{{ env "PLEX_IP" }}:32400"
+
+    homarr:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "SERVER_IP" }}:7575"
