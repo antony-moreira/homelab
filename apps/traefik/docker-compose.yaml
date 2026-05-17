@@ -11,26 +11,32 @@ services:
       - "443:443"
 
     environment:
-      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
-      - TRAEFIK_LOCAL_DOMAIN=${TRAEFIK_LOCAL_DOMAIN}
-      - PROXMOX_LEON_IP=${PROXMOX_LEON_IP}
-      - PROXMOX_CLAIRE_IP=${PROXMOX_CLAIRE_IP}
+      - ADGUARD_DOMAIN=${ADGUARD_DOMAIN}
+      - ADGUARD_HOME_DOMAIN=${ADGUARD_HOME_DOMAIN}
       - ADGUARD_IP=${ADGUARD_IP}
-      - ADGUARD_SECONDARY_IP=${ADGUARD_SECONDARY_IP}
       - ADGUARD_PORT=${ADGUARD_PORT}
-      - PROXMOX_LEON_DOMAIN=${PROXMOX_LEON_DOMAIN}
-      - PROXMOX_LEON_HOME_DOMAIN=${PROXMOX_LEON_HOME_DOMAIN}
-      - PROXMOX_DOMAIN=${PROXMOX_DOMAIN}
-      - PROXMOX_HOME_DOMAIN=${PROXMOX_HOME_DOMAIN}
+      - ADGUARD_SECONDARY_DOMAIN=${ADGUARD_SECONDARY_DOMAIN}
+      - ADGUARD_SECONDARY_HOME_DOMAIN=${ADGUARD_SECONDARY_HOME_DOMAIN}
+      - ADGUARD_SECONDARY_IP=${ADGUARD_SECONDARY_IP}
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+      - CLOUDFLARE_TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+      - HOMARR_DOMAIN=${HOMARR_DOMAIN}
+      - HOMARR_HOME_DOMAIN=${HOMARR_HOME_DOMAIN}
       - PLEX_DOMAIN=${PLEX_DOMAIN}
       - PLEX_HOME_DOMAIN=${PLEX_HOME_DOMAIN}
       - PLEX_IP=${PLEX_IP}
       - PROXMOX_CLAIRE_DOMAIN=${PROXMOX_CLAIRE_DOMAIN}
       - PROXMOX_CLAIRE_HOME_DOMAIN=${PROXMOX_CLAIRE_HOME_DOMAIN}
-      - ADGUARD_DOMAIN=${ADGUARD_DOMAIN}
-      - ADGUARD_HOME_DOMAIN=${ADGUARD_HOME_DOMAIN}
-      - ADGUARD_SECONDARY_DOMAIN=${ADGUARD_SECONDARY_DOMAIN}
-      - ADGUARD_SECONDARY_HOME_DOMAIN=${ADGUARD_SECONDARY_HOME_DOMAIN}
+      - PROXMOX_CLAIRE_IP=${PROXMOX_CLAIRE_IP}
+      - PROXMOX_DOMAIN=${PROXMOX_DOMAIN}
+      - PROXMOX_HOME_DOMAIN=${PROXMOX_HOME_DOMAIN}
+      - PROXMOX_LEON_DOMAIN=${PROXMOX_LEON_DOMAIN}
+      - PROXMOX_LEON_HOME_DOMAIN=${PROXMOX_LEON_HOME_DOMAIN}
+      - PROXMOX_LEON_IP=${PROXMOX_LEON_IP}
+      - SERVER_IP=${SERVER_IP}
+      - TRAEFIK_BASIC_AUTH=${TRAEFIK_BASIC_AUTH}
+      - TRAEFIK_DOMAIN=${TRAEFIK_DOMAIN}
+      - TRAEFIK_LOCAL_DOMAIN=${TRAEFIK_LOCAL_DOMAIN}
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -40,14 +46,12 @@ services:
 
     labels:
       - "traefik.enable=true"
-
       - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DOMAIN}`) || Host(`${TRAEFIK_LOCAL_DOMAIN}`)"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.middlewares=auth@docker"
-
       - "traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_BASIC_AUTH}"
 
   cloudflared:
