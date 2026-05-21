@@ -2,10 +2,29 @@ import os
 import datetime
 import docker as docker_sdk
 import httpx
+import uvicorn
+from starlette.responses import Response
 from mcp.server.fastmcp import FastMCP
 
 port = int(os.environ.get("MCP_PORT", 8765))
+MCP_AUTH_TOKEN = os.environ["MCP_AUTH_TOKEN"]
+
 mcp = FastMCP("homelab", host="0.0.0.0", port=port)
+
+
+class BearerAuthMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] in ("http", "websocket"):
+            headers = dict(scope.get("headers", []))
+            auth = headers.get(b"authorization", b"").decode()
+            if not (auth.startswith("Bearer ") and auth[7:] == MCP_AUTH_TOKEN):
+                response = Response("Unauthorized", status_code=401)
+                await response(scope, receive, send)
+                return
+        await self.app(scope, receive, send)
 
 PROXMOX_AUTH = f"PVEAPIToken=root@pam!homepage={os.environ['PROXMOX_TOKEN_SECRET']}"
 LEON_URL = f"https://{os.environ['PROXMOX_LEON_IP']}:8006/api2/json"
@@ -159,4 +178,5 @@ def proxmox_storage_status(node: str) -> str:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http")
+    app = BearerAuthMiddleware(mcp.streamable_http_app())
+    uvicorn.run(app, host="0.0.0.0", port=port)
