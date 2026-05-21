@@ -4,7 +4,8 @@ import docker as docker_sdk
 import httpx
 from mcp.server.fastmcp import FastMCP
 
-mcp = FastMCP("homelab")
+port = int(os.environ.get("MCP_PORT", 8765))
+mcp = FastMCP("homelab", host="0.0.0.0", port=port)
 
 PROXMOX_AUTH = f"PVEAPIToken=root@pam!homepage={os.environ['PROXMOX_TOKEN_SECRET']}"
 LEON_URL = f"https://{os.environ['PROXMOX_LEON_IP']}:8006/api2/json"
@@ -158,5 +159,4 @@ def proxmox_storage_status(node: str) -> str:
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("MCP_PORT", 8765))
-    mcp.run(transport="streamable-http", host="0.0.0.0", port=port)
+    mcp.run(transport="streamable-http")

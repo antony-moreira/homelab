@@ -21,7 +21,6 @@ services:
       - "traefik.http.routers.mcp-ssh-server.tls=true"
       - "traefik.http.routers.mcp-ssh-server.tls.certresolver=cloudflare"
       - "traefik.http.services.mcp-ssh-server.loadbalancer.server.port=8765"
-    restart: unless-stopped
 
 networks:
   traefik:
