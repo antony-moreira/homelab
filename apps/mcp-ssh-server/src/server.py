@@ -1,36 +1,28 @@
 import os
+import json
+import secrets
 import datetime
+from urllib.parse import parse_qs, urlencode
 import docker as docker_sdk
 import httpx
 import uvicorn
-from starlette.responses import Response
 from mcp.server.fastmcp import FastMCP
 
 port = int(os.environ.get("MCP_PORT", 8765))
 MCP_AUTH_TOKEN = os.environ["MCP_AUTH_TOKEN"]
+MCP_PUBLIC_DOMAIN = os.environ.get("MCP_PUBLIC_DOMAIN", "")
+BASE_URL = f"https://{MCP_PUBLIC_DOMAIN}" if MCP_PUBLIC_DOMAIN else ""
 
 mcp = FastMCP("homelab", host="0.0.0.0", port=port)
-
-
-class BearerAuthMiddleware:
-    def __init__(self, app):
-        self.app = app
-
-    async def __call__(self, scope, receive, send):
-        if scope["type"] in ("http", "websocket"):
-            headers = dict(scope.get("headers", []))
-            auth = headers.get(b"authorization", b"").decode()
-            if not (auth.startswith("Bearer ") and auth[7:] == MCP_AUTH_TOKEN):
-                response = Response("Unauthorized", status_code=401)
-                await response(scope, receive, send)
-                return
-        await self.app(scope, receive, send)
 
 PROXMOX_AUTH = f"PVEAPIToken=root@pam!homepage={os.environ['PROXMOX_TOKEN_SECRET']}"
 LEON_URL = f"https://{os.environ['PROXMOX_LEON_IP']}:8006/api2/json"
 CLAIRE_URL = f"https://{os.environ['PROXMOX_CLAIRE_IP']}:8006/api2/json"
 
 docker_client = docker_sdk.from_env()
+
+# in-memory auth codes: {code: {"redirect_uri": ..., "expires": ...}}
+_auth_codes: dict = {}
 
 
 def _pve_get(base_url: str, path: str):
@@ -177,6 +169,160 @@ def proxmox_storage_status(node: str) -> str:
     return "\n".join(lines) if lines else "Sem informação de storage."
 
 
+# ── ASGI helpers ──────────────────────────────────────────────────────────────
+
+async def _send_json(scope, receive, send, data: dict, status: int = 200):
+    body = json.dumps(data).encode()
+    await send({
+        "type": "http.response.start",
+        "status": status,
+        "headers": [
+            (b"content-type", b"application/json"),
+            (b"content-length", str(len(body)).encode()),
+        ],
+    })
+    await send({"type": "http.response.body", "body": body})
+
+
+async def _send_redirect(scope, receive, send, location: str):
+    loc = location.encode()
+    await send({
+        "type": "http.response.start",
+        "status": 302,
+        "headers": [
+            (b"location", loc),
+            (b"content-length", b"0"),
+        ],
+    })
+    await send({"type": "http.response.body", "body": b""})
+
+
+async def _read_body(receive) -> bytes:
+    body = b""
+    while True:
+        msg = await receive()
+        body += msg.get("body", b"")
+        if not msg.get("more_body"):
+            break
+    return body
+
+
+# ── OAuth 2.0 Authorization Code + PKCE ──────────────────────────────────────
+
+OPEN_PATHS = {
+    "/.well-known/oauth-protected-resource",
+    "/.well-known/oauth-authorization-server",
+    "/.well-known/openid-configuration",
+    "/token",
+    "/authorize",
+}
+
+OAUTH_META = {
+    "issuer": BASE_URL,
+    "authorization_endpoint": f"{BASE_URL}/authorize",
+    "token_endpoint": f"{BASE_URL}/token",
+    "response_types_supported": ["code"],
+    "grant_types_supported": ["authorization_code", "client_credentials"],
+    "code_challenge_methods_supported": ["S256"],
+    "token_endpoint_auth_methods_supported": ["none", "client_secret_post"],
+}
+
+
+mcp_app = mcp.streamable_http_app()
+
+
+async def app(scope, receive, send):
+    if scope["type"] == "lifespan":
+        await mcp_app(scope, receive, send)
+        return
+
+    if scope["type"] != "http":
+        await mcp_app(scope, receive, send)
+        return
+
+    path = scope.get("path", "")
+    query = scope.get("query_string", b"").decode()
+
+    # ── public OAuth endpoints ────────────────────────────────────────────────
+
+    if path == "/.well-known/oauth-protected-resource":
+        await _send_json(scope, receive, send, {
+            "resource": BASE_URL,
+            "authorization_servers": [BASE_URL],
+        })
+        return
+
+    if path in ("/.well-known/oauth-authorization-server", "/.well-known/openid-configuration"):
+        await _send_json(scope, receive, send, OAUTH_META)
+        return
+
+    if path == "/authorize":
+        params = {k: v[0] for k, v in parse_qs(query).items()}
+        redirect_uri = params.get("redirect_uri", "")
+        state = params.get("state", "")
+        code = secrets.token_urlsafe(32)
+        _auth_codes[code] = {
+            "redirect_uri": redirect_uri,
+            "expires": datetime.datetime.utcnow() + datetime.timedelta(seconds=120),
+        }
+        callback_params = {"code": code}
+        if state:
+            callback_params["state"] = state
+        await _send_redirect(scope, receive, send, f"{redirect_uri}?{urlencode(callback_params)}")
+        return
+
+    if path == "/token":
+        body = await _read_body(receive)
+        params = {k: v[0] for k, v in parse_qs(body.decode()).items()}
+        grant_type = params.get("grant_type", "")
+
+        if grant_type == "authorization_code":
+            code = params.get("code", "")
+            entry = _auth_codes.pop(code, None)
+            if entry and datetime.datetime.utcnow() < entry["expires"]:
+                await _send_json(scope, receive, send, {
+                    "access_token": MCP_AUTH_TOKEN,
+                    "token_type": "bearer",
+                    "expires_in": 86400,
+                })
+            else:
+                await _send_json(scope, receive, send, {"error": "invalid_grant"}, status=400)
+        elif grant_type == "client_credentials":
+            if params.get("client_secret") == MCP_AUTH_TOKEN:
+                await _send_json(scope, receive, send, {
+                    "access_token": MCP_AUTH_TOKEN,
+                    "token_type": "bearer",
+                    "expires_in": 86400,
+                })
+            else:
+                await _send_json(scope, receive, send, {"error": "invalid_client"}, status=401)
+        else:
+            await _send_json(scope, receive, send, {"error": "unsupported_grant_type"}, status=400)
+        return
+
+    # ── Bearer-protected MCP ──────────────────────────────────────────────────
+
+    headers = dict(scope.get("headers", []))
+    auth = headers.get(b"authorization", b"").decode()
+    if not (auth.startswith("Bearer ") and auth[7:] == MCP_AUTH_TOKEN):
+        www_auth = (
+            f'Bearer realm="homelab",'
+            f' resource_metadata="{BASE_URL}/.well-known/oauth-protected-resource"'
+        ).encode()
+        await send({
+            "type": "http.response.start",
+            "status": 401,
+            "headers": [
+                (b"content-type", b"text/plain"),
+                (b"content-length", b"12"),
+                (b"www-authenticate", www_auth),
+            ],
+        })
+        await send({"type": "http.response.body", "body": b"Unauthorized"})
+        return
+
+    await mcp_app(scope, receive, send)
+
+
 if __name__ == "__main__":
-    app = BearerAuthMiddleware(mcp.streamable_http_app())
     uvicorn.run(app, host="0.0.0.0", port=port)
