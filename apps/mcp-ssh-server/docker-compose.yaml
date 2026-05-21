@@ -1,0 +1,28 @@
+services:
+  mcp-ssh-server:
+    build: .
+    container_name: mcp-ssh-server
+    restart: unless-stopped
+    networks:
+      - traefik
+    ports:
+      - 8765:8765
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - MCP_PORT=${MCP_PORT}
+      - PROXMOX_LEON_IP=${PROXMOX_LEON_IP}
+      - PROXMOX_CLAIRE_IP=${PROXMOX_CLAIRE_IP}
+      - PROXMOX_TOKEN_SECRET=${PROXMOX_TOKEN_SECRET}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-ssh-server.rule=Host(`${MCP_DOMAIN}`)"
+      - "traefik.http.routers.mcp-ssh-server.entrypoints=websecure"
+      - "traefik.http.routers.mcp-ssh-server.tls=true"
+      - "traefik.http.routers.mcp-ssh-server.tls.certresolver=cloudflare"
+      - "traefik.http.services.mcp-ssh-server.loadbalancer.server.port=8765"
+    restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
