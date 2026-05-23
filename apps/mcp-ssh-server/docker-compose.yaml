@@ -9,6 +9,7 @@ services:
       - 8765:8765
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/antony/.ssh:/root/.ssh:ro
     environment:
       - MCP_PORT=${MCP_PORT}
       - MCP_AUTH_TOKEN=${MCP_AUTH_TOKEN}
@@ -16,6 +17,8 @@ services:
       - PROXMOX_LEON_IP=${PROXMOX_LEON_IP}
       - PROXMOX_CLAIRE_IP=${PROXMOX_CLAIRE_IP}
       - PROXMOX_TOKEN_SECRET=${PROXMOX_TOKEN_SECRET}
+      - SSH_USER=${SSH_USER}
+      - SSH_HOST_HOMELAB=${SSH_HOST_HOMELAB}
     labels:
       - "traefik.enable=true"
       # rota local (Tailscale) via HTTPS
