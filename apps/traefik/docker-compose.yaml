@@ -37,6 +37,8 @@ services:
       - TRAEFIK_BASIC_AUTH=${TRAEFIK_BASIC_AUTH}
       - TRAEFIK_DOMAIN=${TRAEFIK_DOMAIN}
       - TRAEFIK_LOCAL_DOMAIN=${TRAEFIK_LOCAL_DOMAIN}
+      - UPSNAP_HOME_DOMAIN=${UPSNAP_HOME_DOMAIN}
+      - UPSNAP_IP=${UPSNAP_IP}
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
