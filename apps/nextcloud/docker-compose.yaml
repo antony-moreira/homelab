@@ -33,6 +33,7 @@ services:
       - "traefik.http.routers.nextcloud.tls=true"
       - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
       - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik"
       - "traefik.http.middlewares.nextcloud-hsts.headers.stsSeconds=15552000"
       - "traefik.http.middlewares.nextcloud-hsts.headers.stsIncludeSubdomains=true"
       - "traefik.http.middlewares.nextcloud-dav.redirectregex.permanent=true"

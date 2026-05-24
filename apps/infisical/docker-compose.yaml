@@ -25,6 +25,7 @@ services:
       - "traefik.http.routers.infisical.tls=true"
       - "traefik.http.routers.infisical.tls.certresolver=cloudflare"
       - "traefik.http.services.infisical.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik"
 
   infisical-db:
     image: postgres:16-alpine
