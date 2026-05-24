@@ -1,0 +1,57 @@
+services:
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud
+    restart: unless-stopped
+    networks:
+      - traefik
+    ports:
+      - "8383:80"
+    depends_on:
+      - nextcloud-db
+    volumes:
+      - /home/antony/apps/nextcloud/config:/var/www/html/config
+      - /home/antony/apps/nextcloud/data:/var/www/html/data
+      - /home/antony:/external/home
+      - /mnt:/external/mnt
+    environment:
+      - MYSQL_HOST=nextcloud-db
+      - MYSQL_DATABASE=${NEXTCLOUD_DB_NAME}
+      - MYSQL_USER=${NEXTCLOUD_DB_USER}
+      - MYSQL_PASSWORD=${NEXTCLOUD_DB_PASSWORD}
+      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+      - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_HOME_DOMAIN} ${NEXTCLOUD_DOMAIN}
+      - OVERWRITECLIURL=https://${NEXTCLOUD_HOME_DOMAIN}
+      - OVERWRITEPROTOCOL=https
+      - TZ=America/Sao_Paulo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_DOMAIN}`) || Host(`${NEXTCLOUD_HOME_DOMAIN}`)"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls=true"
+      - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.nextcloud-dav.redirectregex.permanent=true"
+      - "traefik.http.middlewares.nextcloud-dav.redirectregex.regex=https://(.*)/.well-known/(?:card|cal)dav"
+      - "traefik.http.middlewares.nextcloud-dav.redirectregex.replacement=https://$${1}/remote.php/dav"
+      - "traefik.http.routers.nextcloud.middlewares=nextcloud-dav"
+
+  nextcloud-db:
+    image: mariadb:lts
+    container_name: nextcloud-db
+    restart: unless-stopped
+    networks:
+      - traefik
+    volumes:
+      - /home/antony/apps/nextcloud/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${NEXTCLOUD_DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${NEXTCLOUD_DB_NAME}
+      - MYSQL_USER=${NEXTCLOUD_DB_USER}
+      - MYSQL_PASSWORD=${NEXTCLOUD_DB_PASSWORD}
+      - TZ=America/Sao_Paulo
+
+networks:
+  traefik:
+    external: true
