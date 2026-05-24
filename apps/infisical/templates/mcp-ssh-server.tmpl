@@ -1,11 +1,2 @@
-{{- with secret "homelab" "prod" "/mcp-ssh-server" -}}
-MCP_AUTH_TOKEN={{ .MCP_AUTH_TOKEN }}
-MCP_DOMAIN={{ .MCP_DOMAIN }}
-MCP_PORT={{ .MCP_PORT }}
-MCP_PUBLIC_DOMAIN={{ .MCP_PUBLIC_DOMAIN }}
-PROXMOX_CLAIRE_IP={{ .PROXMOX_CLAIRE_IP }}
-PROXMOX_LEON_IP={{ .PROXMOX_LEON_IP }}
-PROXMOX_TOKEN_SECRET={{ .PROXMOX_TOKEN_SECRET }}
-SSH_HOST_HOMELAB={{ .SSH_HOST_HOMELAB }}
-SSH_USER={{ .SSH_USER }}
-{{- end }}
+{{- range secret "b6a8586f-b715-49ad-9b7a-39e5f70ce222" "prod" "/mcp-ssh-server" }}{{ .Key }}={{ .Value }}
+{{ end -}}

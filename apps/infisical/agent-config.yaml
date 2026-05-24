@@ -1,11 +1,11 @@
 infisical:
-  address: "https://infisical.home.tonho.app.br"
+  address: "http://infisical:8080"
 
 auth:
   type: "universal-auth"
   config:
-    client-id: "env://INFISICAL_AGENT_CLIENT_ID"
-    client-secret: "env://INFISICAL_AGENT_CLIENT_SECRET"
+    client-id: "/etc/infisical/client-id"
+    client-secret: "/etc/infisical/client-secret"
 
 sinks:
   - type: file
