@@ -1,0 +1,4 @@
+{{- with secret "homelab" "prod" "/dockhand" -}}
+DOCKHAND_DOMAIN={{ .DOCKHAND_DOMAIN }}
+DOCKHAND_HOME_DOMAIN={{ .DOCKHAND_HOME_DOMAIN }}
+{{- end }}

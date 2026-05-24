@@ -1,0 +1,3 @@
+{{- with secret "homelab" "prod" "/tailscale" -}}
+TS_AUTHKEY={{ .TS_AUTHKEY }}
+{{- end }}

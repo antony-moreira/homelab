@@ -1,0 +1,4 @@
+{{- with secret "homelab" "prod" "/jellyfin" -}}
+JELLYFIN_DOMAIN={{ .JELLYFIN_DOMAIN }}
+JELLYFIN_HOME_DOMAIN={{ .JELLYFIN_HOME_DOMAIN }}
+{{- end }}

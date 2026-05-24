@@ -1,0 +1,4 @@
+{{- with secret "homelab" "prod" "/uptime-kuma" -}}
+UPTIMEKUMA_DOMAIN={{ .UPTIMEKUMA_DOMAIN }}
+UPTIMEKUMA_HOME_DOMAIN={{ .UPTIMEKUMA_HOME_DOMAIN }}
+{{- end }}

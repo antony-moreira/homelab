@@ -1,0 +1,4 @@
+{{- with secret "homelab" "prod" "/syncthing" -}}
+SYNCTHING_DOMAIN={{ .SYNCTHING_DOMAIN }}
+SYNCTHING_HOME_DOMAIN={{ .SYNCTHING_HOME_DOMAIN }}
+{{- end }}

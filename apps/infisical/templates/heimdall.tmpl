@@ -1,0 +1,4 @@
+{{- with secret "homelab" "prod" "/heimdall" -}}
+HEIMDALL_DOMAIN={{ .HEIMDALL_DOMAIN }}
+HEIMDALL_HOME_DOMAIN={{ .HEIMDALL_HOME_DOMAIN }}
+{{- end }}

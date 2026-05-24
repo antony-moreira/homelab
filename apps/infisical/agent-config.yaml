@@ -27,3 +27,53 @@ templates:
     destination-path: /output/filebrowser/.env.dockhand
     config:
       polling-interval: 60s
+
+  - source-path: /templates/arrs-stack.tmpl
+    destination-path: /output/arrs-stack/.env.dockhand
+    config:
+      polling-interval: 60s
+
+  - source-path: /templates/dashboard.tmpl
+    destination-path: /output/dashboard/.env.dockhand
+    config:
+      polling-interval: 60s
+
+  - source-path: /templates/dockhand.tmpl
+    destination-path: /output/dockhand/.env.dockhand
+    config:
+      polling-interval: 60s
+
+  - source-path: /templates/heimdall.tmpl
+    destination-path: /output/heimdall/.env.dockhand
+    config:
+      polling-interval: 60s
+
+  - source-path: /templates/jellyfin.tmpl
+    destination-path: /output/jellyfin/.env.dockhand
+    config:
+      polling-interval: 60s
+
+  - source-path: /templates/mcp-ssh-server.tmpl
+    destination-path: /output/mcp-ssh-server/.env.dockhand
+    config:
+      polling-interval: 60s
+
+  - source-path: /templates/monitoring-stack.tmpl
+    destination-path: /output/monitoring-stack/.env.dockhand
+    config:
+      polling-interval: 60s
+
+  - source-path: /templates/syncthing.tmpl
+    destination-path: /output/syncthing/.env.dockhand
+    config:
+      polling-interval: 60s
+
+  - source-path: /templates/tailscale.tmpl
+    destination-path: /output/tailscale/.env.dockhand
+    config:
+      polling-interval: 60s
+
+  - source-path: /templates/uptime-kuma.tmpl
+    destination-path: /output/uptime-kuma/.env.dockhand
+    config:
+      polling-interval: 60s
