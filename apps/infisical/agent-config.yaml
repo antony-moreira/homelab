@@ -1,0 +1,29 @@
+infisical:
+  address: "https://infisical.home.tonho.app.br"
+
+auth:
+  type: "universal-auth"
+  config:
+    client-id: "<INFISICAL_AGENT_CLIENT_ID>"
+    client-secret: "<INFISICAL_AGENT_CLIENT_SECRET>"
+
+sinks:
+  - type: file
+    config:
+      path: "/tmp/infisical-token"
+
+templates:
+  - source-path: /templates/traefik.tmpl
+    destination-path: /output/traefik/.env.dockhand
+    config:
+      polling-interval: 60s
+
+  - source-path: /templates/nextcloud.tmpl
+    destination-path: /output/nextcloud/.env.dockhand
+    config:
+      polling-interval: 60s
+
+  - source-path: /templates/filebrowser.tmpl
+    destination-path: /output/filebrowser/.env.dockhand
+    config:
+      polling-interval: 60s

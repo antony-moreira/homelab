@@ -1,0 +1,4 @@
+{{- with secret "homelab" "prod" "/filebrowser" -}}
+FILEBROWSER_DOMAIN={{ .FILEBROWSER_DOMAIN }}
+FILEBROWSER_HOME_DOMAIN={{ .FILEBROWSER_HOME_DOMAIN }}
+{{- end }}

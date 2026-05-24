@@ -1,0 +1,74 @@
+services:
+  infisical:
+    image: infisical/infisical:latest-postgres
+    container_name: infisical
+    restart: unless-stopped
+    depends_on:
+      infisical-db:
+        condition: service_healthy
+      infisical-redis:
+        condition: service_started
+    networks:
+      - traefik
+      - infisical-internal
+    environment:
+      - ENCRYPTION_KEY=${INFISICAL_ENCRYPTION_KEY}
+      - AUTH_SECRET=${INFISICAL_AUTH_SECRET}
+      - DB_CONNECTION_URI=postgresql://${INFISICAL_DB_USER}:${INFISICAL_DB_PASSWORD}@infisical-db:5432/${INFISICAL_DB_NAME}
+      - REDIS_URL=redis://infisical-redis:6379
+      - SITE_URL=https://${INFISICAL_HOME_DOMAIN}
+      - TELEMETRY_ENABLED=false
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.infisical.rule=Host(`${INFISICAL_HOME_DOMAIN}`)"
+      - "traefik.http.routers.infisical.entrypoints=websecure"
+      - "traefik.http.routers.infisical.tls=true"
+      - "traefik.http.routers.infisical.tls.certresolver=cloudflare"
+      - "traefik.http.services.infisical.loadbalancer.server.port=8080"
+
+  infisical-db:
+    image: postgres:16-alpine
+    container_name: infisical-db
+    restart: unless-stopped
+    networks:
+      - infisical-internal
+    volumes:
+      - /home/antony/apps/infisical/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${INFISICAL_DB_NAME}
+      - POSTGRES_USER=${INFISICAL_DB_USER}
+      - POSTGRES_PASSWORD=${INFISICAL_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${INFISICAL_DB_USER} -d ${INFISICAL_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  infisical-redis:
+    image: redis:7-alpine
+    container_name: infisical-redis
+    restart: unless-stopped
+    networks:
+      - infisical-internal
+    volumes:
+      - /home/antony/apps/infisical/redis:/data
+
+  infisical-agent:
+    image: infisical/cli:latest
+    container_name: infisical-agent
+    restart: unless-stopped
+    command: agent --config /etc/infisical/agent-config.yaml
+    depends_on:
+      - infisical
+    networks:
+      - infisical-internal
+    volumes:
+      - /home/antony/apps/infisical/agent-config.yaml:/etc/infisical/agent-config.yaml:ro
+      - /home/antony/apps/infisical/templates:/templates:ro
+      - /home/antony/apps/dockhand/dockhand_data/stacks/Homelab:/output
+
+networks:
+  traefik:
+    external: true
+  infisical-internal:
+    driver: bridge
