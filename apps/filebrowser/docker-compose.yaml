@@ -11,7 +11,7 @@ services:
       - /home/antony:/srv
       - /mnt:/srv/mnt
       - /home/antony/apps/filebrowser:/config
-      - /home/antony/apps/filebrowser/filebrowser.db:/database.db
+      - /home/antony/apps/filebrowser/filebrowser.db:/database/filebrowser.db
     environment:
       - TZ=America/Sao_Paulo
     labels:
