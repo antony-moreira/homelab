@@ -24,6 +24,7 @@ services:
       - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_HOME_DOMAIN} ${NEXTCLOUD_DOMAIN}
       - OVERWRITECLIURL=https://${NEXTCLOUD_HOME_DOMAIN}
       - OVERWRITEPROTOCOL=https
+      - TRUSTED_PROXIES=172.16.0.0/12
       - TZ=America/Sao_Paulo
     labels:
       - "traefik.enable=true"
@@ -32,10 +33,12 @@ services:
       - "traefik.http.routers.nextcloud.tls=true"
       - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
       - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.nextcloud-hsts.headers.stsSeconds=15552000"
+      - "traefik.http.middlewares.nextcloud-hsts.headers.stsIncludeSubdomains=true"
       - "traefik.http.middlewares.nextcloud-dav.redirectregex.permanent=true"
       - "traefik.http.middlewares.nextcloud-dav.redirectregex.regex=https://(.*)/.well-known/(?:card|cal)dav"
       - "traefik.http.middlewares.nextcloud-dav.redirectregex.replacement=https://$${1}/remote.php/dav"
-      - "traefik.http.routers.nextcloud.middlewares=nextcloud-dav"
+      - "traefik.http.routers.nextcloud.middlewares=nextcloud-dav,nextcloud-hsts"
 
   nextcloud-db:
     image: mariadb:lts
