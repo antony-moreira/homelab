@@ -63,6 +63,9 @@ services:
       - infisical
     networks:
       - infisical-internal
+    environment:
+      - INFISICAL_AGENT_CLIENT_ID=${INFISICAL_AGENT_CLIENT_ID}
+      - INFISICAL_AGENT_CLIENT_SECRET=${INFISICAL_AGENT_CLIENT_SECRET}
     volumes:
       - /home/antony/apps/infisical/agent-config.yaml:/etc/infisical/agent-config.yaml:ro
       - /home/antony/apps/infisical/templates:/templates:ro

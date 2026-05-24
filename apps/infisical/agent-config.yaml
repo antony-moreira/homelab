@@ -4,8 +4,8 @@ infisical:
 auth:
   type: "universal-auth"
   config:
-    client-id: "<INFISICAL_AGENT_CLIENT_ID>"
-    client-secret: "<INFISICAL_AGENT_CLIENT_SECRET>"
+    client-id: "env://INFISICAL_AGENT_CLIENT_ID"
+    client-secret: "env://INFISICAL_AGENT_CLIENT_SECRET"
 
 sinks:
   - type: file
