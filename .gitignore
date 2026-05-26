@@ -1,7 +1,5 @@
 # secrets
 .env
-apps/infisical/client-id
-apps/infisical/client-secret
 .env.all
 acme.json
 rclone.conf
