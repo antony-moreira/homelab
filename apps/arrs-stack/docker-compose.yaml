@@ -16,6 +16,13 @@ services:
       - /home/antony/apps/homarr/data:/data
     ports:
       - '7575:7575'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homarr.rule=Host(`${HOMARR_DOMAIN}`) || Host(`${HOMARR_HOME_DOMAIN}`)"
+      - "traefik.http.routers.homarr.entrypoints=websecure"
+      - "traefik.http.routers.homarr.tls=true"
+      - "traefik.http.routers.homarr.tls.certresolver=cloudflare"
+      - "traefik.http.services.homarr.loadbalancer.server.port=7575"
   overseerr:
     image: lscr.io/linuxserver/overseerr:latest
     container_name: overseerr
