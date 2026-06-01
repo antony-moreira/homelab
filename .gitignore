@@ -6,3 +6,4 @@ rclone.conf
 adguardhome-sync.yaml
 SESSION.md
 .claude
+.DS*
