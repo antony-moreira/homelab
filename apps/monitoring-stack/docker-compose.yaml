@@ -80,8 +80,6 @@ services:
     user: "1000"
     container_name: grafana
     restart: unless-stopped
-    ports:
-      - 3002:3000
     volumes:
       - /home/antony/apps/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - /home/antony/apps/grafana:/var/lib/grafana
