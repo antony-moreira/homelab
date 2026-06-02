@@ -341,36 +341,20 @@
         "defaults": {
           "unit": "decgbytes",
           "min": 0,
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 85,
-            "gradientMode": "none",
-            "stacking": { "mode": "normal", "group": "A" },
-            "lineInterpolation": "smooth",
-            "showPoints": "never",
-            "spanNulls": false,
-            "axisCenteredZero": false,
-            "scaleDistribution": { "type": "linear" },
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-            "thresholdsStyle": { "mode": "off" }
-          },
-          "mappings": [],
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+          "mappings": []
         },
         "overrides": [
           {
             "matcher": { "id": "byFrameRefID", "options": "A" },
             "properties": [
-              { "id": "color", "value": { "fixedColor": "semi-dark-orange", "mode": "fixed" } },
-              { "id": "displayName", "value": "Used" }
+              { "id": "color", "value": { "fixedColor": "semi-dark-orange", "mode": "fixed" } }
             ]
           },
           {
             "matcher": { "id": "byFrameRefID", "options": "B" },
             "properties": [
-              { "id": "color", "value": { "fixedColor": "semi-dark-green", "mode": "fixed" } },
-              { "id": "displayName", "value": "Free" }
+              { "id": "color", "value": { "fixedColor": "semi-dark-green", "mode": "fixed" } }
             ]
           }
         ]
@@ -378,23 +362,28 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
       "id": 11,
       "options": {
-        "tooltip": { "mode": "multi", "sort": "none" },
-        "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom" }
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showUnfilled": true,
+        "text": {}
       },
       "title": "Disk / (root) — Used vs Free",
-      "type": "timeseries",
+      "type": "bargauge",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
           "expr": "(node_filesystem_size_bytes{mountpoint=\"/\", fstype!=\"overlay\"} - node_filesystem_avail_bytes{mountpoint=\"/\", fstype!=\"overlay\"}) / 1024^3",
           "legendFormat": "Used",
-          "refId": "A"
+          "refId": "A",
+          "instant": true
         },
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
           "expr": "node_filesystem_avail_bytes{mountpoint=\"/\", fstype!=\"overlay\"} / 1024^3",
           "legendFormat": "Free",
-          "refId": "B"
+          "refId": "B",
+          "instant": true
         }
       ]
     },
@@ -457,36 +446,20 @@
         "defaults": {
           "unit": "decgbytes",
           "min": 0,
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 85,
-            "gradientMode": "none",
-            "stacking": { "mode": "normal", "group": "A" },
-            "lineInterpolation": "smooth",
-            "showPoints": "never",
-            "spanNulls": false,
-            "axisCenteredZero": false,
-            "scaleDistribution": { "type": "linear" },
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-            "thresholdsStyle": { "mode": "off" }
-          },
-          "mappings": [],
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+          "mappings": []
         },
         "overrides": [
           {
             "matcher": { "id": "byFrameRefID", "options": "A" },
             "properties": [
-              { "id": "color", "value": { "fixedColor": "semi-dark-orange", "mode": "fixed" } },
-              { "id": "displayName", "value": "Used" }
+              { "id": "color", "value": { "fixedColor": "semi-dark-orange", "mode": "fixed" } }
             ]
           },
           {
             "matcher": { "id": "byFrameRefID", "options": "B" },
             "properties": [
-              { "id": "color", "value": { "fixedColor": "semi-dark-green", "mode": "fixed" } },
-              { "id": "displayName", "value": "Free" }
+              { "id": "color", "value": { "fixedColor": "semi-dark-green", "mode": "fixed" } }
             ]
           }
         ]
@@ -494,24 +467,76 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
       "id": 14,
       "options": {
-        "tooltip": { "mode": "multi", "sort": "none" },
-        "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom" }
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showUnfilled": true,
+        "text": {}
       },
       "title": "HD Externo /mnt/homelab-hd-externo — Used vs Free",
-      "description": "Via node_exporter. Requer redeploy da monitoring-stack.",
-      "type": "timeseries",
+      "type": "bargauge",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
           "expr": "(node_filesystem_size_bytes{mountpoint=\"/mnt/homelab-hd-externo\"} - node_filesystem_avail_bytes{mountpoint=\"/mnt/homelab-hd-externo\"}) / 1024^3",
           "legendFormat": "Used",
-          "refId": "A"
+          "refId": "A",
+          "instant": true
         },
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
           "expr": "node_filesystem_avail_bytes{mountpoint=\"/mnt/homelab-hd-externo\"} / 1024^3",
           "legendFormat": "Free",
-          "refId": "B"
+          "refId": "B",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 85 }
+            ]
+          },
+          "mappings": [],
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
+      "id": 16,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "title": "Disk Usage %",
+      "type": "bargauge",
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "(node_filesystem_size_bytes{mountpoint=\"/\", fstype!=\"overlay\"} - node_filesystem_avail_bytes{mountpoint=\"/\", fstype!=\"overlay\"}) / node_filesystem_size_bytes{mountpoint=\"/\", fstype!=\"overlay\"} * 100",
+          "legendFormat": "/ (root)",
+          "refId": "A",
+          "instant": true
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "expr": "(node_filesystem_size_bytes{mountpoint=\"/mnt/homelab-hd-externo\"} - node_filesystem_avail_bytes{mountpoint=\"/mnt/homelab-hd-externo\"}) / node_filesystem_size_bytes{mountpoint=\"/mnt/homelab-hd-externo\"} * 100",
+          "legendFormat": "/mnt (HD Externo)",
+          "refId": "B",
+          "instant": true
         }
       ]
     },
