@@ -339,91 +339,62 @@
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 70 },
-              { "color": "red", "value": 90 }
-            ]
-          },
-          "unit": "percent",
+          "unit": "decgbytes",
           "min": 0,
-          "max": 100
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 14 },
-      "id": 11,
-      "options": {
-        "displayMode": "gradient",
-        "minVizHeight": 10,
-        "minVizWidth": 0,
-        "orientation": "horizontal",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": true },
-        "showUnfilled": true,
-        "text": {}
-      },
-      "title": "Disk Space Used %",
-      "type": "bargauge",
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "netdata_disk_space_GiB_average{dimension=\"used\"} / (netdata_disk_space_GiB_average{dimension=\"used\"} + netdata_disk_space_GiB_average{dimension=\"avail\"}) * 100",
-          "legendFormat": "{{chart}}",
-          "refId": "A",
-          "instant": false
-        }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "thresholds" },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [{ "color": "blue", "value": null }]
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "stacking": { "mode": "normal", "group": "A" },
+            "lineInterpolation": "smooth",
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false,
+            "scaleDistribution": { "type": "linear" },
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "thresholdsStyle": { "mode": "off" }
           },
-          "unit": "decgbytes"
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
         },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "Free" },
+            "matcher": { "id": "byFrameRefID", "options": "A" },
             "properties": [
-              { "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }
+              { "id": "color", "value": { "fixedColor": "semi-dark-orange", "mode": "fixed" } },
+              { "id": "displayName", "value": "Used" }
+            ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "semi-dark-green", "mode": "fixed" } },
+              { "id": "displayName", "value": "Free" }
             ]
           }
         ]
       },
-      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 14 },
-      "id": 13,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "id": 11,
       "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": true },
-        "textMode": "value_and_name"
+        "tooltip": { "mode": "multi", "sort": "none" },
+        "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom" }
       },
-      "title": "Disk Space GB (Used / Free)",
-      "type": "stat",
+      "title": "Disk / (root) — Used vs Free",
+      "type": "timeseries",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "netdata_disk_space_GiB_average{dimension=\"used\"}",
-          "legendFormat": "Used {{chart}}",
-          "refId": "A",
-          "instant": true
+          "expr": "(node_filesystem_size_bytes{mountpoint=\"/\", fstype!=\"overlay\"} - node_filesystem_avail_bytes{mountpoint=\"/\", fstype!=\"overlay\"}) / 1024^3",
+          "legendFormat": "Used",
+          "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "netdata_disk_space_GiB_average{dimension=\"avail\"}",
-          "legendFormat": "Free {{chart}}",
-          "refId": "B",
-          "instant": true
+          "expr": "node_filesystem_avail_bytes{mountpoint=\"/\", fstype!=\"overlay\"} / 1024^3",
+          "legendFormat": "Free",
+          "refId": "B"
         }
       ]
     },
@@ -484,97 +455,69 @@
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 70 },
-              { "color": "red", "value": 85 }
-            ]
-          },
-          "unit": "percent",
+          "unit": "decgbytes",
           "min": 0,
-          "max": 100
-        },
-        "overrides": []
-      },
-      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 22 },
-      "id": 14,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-        "textMode": "auto"
-      },
-      "title": "HD Externo (/mnt) Used %",
-      "description": "Após redeploy do Netdata com /mnt montado, aparecerá aqui.",
-      "type": "stat",
-      "targets": [
-        {
-          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "netdata_disk_space_GiB_average{chart=\"disk_space._mnt_homelab-hd-externo\", dimension=\"used\"} / (netdata_disk_space_GiB_average{chart=\"disk_space._mnt_homelab-hd-externo\", dimension=\"used\"} + netdata_disk_space_GiB_average{chart=\"disk_space._mnt_homelab-hd-externo\", dimension=\"avail\"}) * 100",
-          "legendFormat": "HD Externo %",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "thresholds" },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [{ "color": "blue", "value": null }]
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "stacking": { "mode": "normal", "group": "A" },
+            "lineInterpolation": "smooth",
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisCenteredZero": false,
+            "scaleDistribution": { "type": "linear" },
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "thresholdsStyle": { "mode": "off" }
           },
-          "unit": "decgbytes"
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
         },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "Free" },
+            "matcher": { "id": "byFrameRefID", "options": "A" },
             "properties": [
-              { "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }
+              { "id": "color", "value": { "fixedColor": "semi-dark-orange", "mode": "fixed" } },
+              { "id": "displayName", "value": "Used" }
+            ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "properties": [
+              { "id": "color", "value": { "fixedColor": "semi-dark-green", "mode": "fixed" } },
+              { "id": "displayName", "value": "Free" }
             ]
           }
         ]
       },
-      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 22 },
-      "id": 15,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
+      "id": 14,
       "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-        "textMode": "value_and_name"
+        "tooltip": { "mode": "multi", "sort": "none" },
+        "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom" }
       },
-      "title": "HD Externo GB",
-      "type": "stat",
+      "title": "HD Externo /mnt/homelab-hd-externo — Used vs Free",
+      "description": "Via node_exporter. Requer redeploy da monitoring-stack.",
+      "type": "timeseries",
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "netdata_disk_space_GiB_average{chart=\"disk_space._mnt_homelab-hd-externo\", dimension=\"used\"}",
+          "expr": "(node_filesystem_size_bytes{mountpoint=\"/mnt/homelab-hd-externo\"} - node_filesystem_avail_bytes{mountpoint=\"/mnt/homelab-hd-externo\"}) / 1024^3",
           "legendFormat": "Used",
-          "refId": "A",
-          "instant": true
+          "refId": "A"
         },
         {
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "expr": "netdata_disk_space_GiB_average{chart=\"disk_space._mnt_homelab-hd-externo\", dimension=\"avail\"}",
+          "expr": "node_filesystem_avail_bytes{mountpoint=\"/mnt/homelab-hd-externo\"} / 1024^3",
           "legendFormat": "Free",
-          "refId": "B",
-          "instant": true
+          "refId": "B"
         }
       ]
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 30 },
       "id": 20,
       "title": "Network",
       "type": "row"
@@ -609,7 +552,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 27 },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 31 },
       "id": 21,
       "options": {
         "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
@@ -635,7 +578,7 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 35 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 39 },
       "id": 30,
       "title": "Docker Containers",
       "type": "row"
@@ -671,7 +614,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 36 },
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 40 },
       "id": 31,
       "options": {
         "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "right" },
@@ -719,7 +662,7 @@
         },
         "overrides": []
       },
-      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 36 },
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 40 },
       "id": 32,
       "options": {
         "legend": { "calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "right" },
