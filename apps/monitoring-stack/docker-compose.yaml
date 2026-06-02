@@ -52,7 +52,7 @@ services:
     container_name: prometheus
     restart: unless-stopped
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - /home/antony/apps/monitoring-stack/prometheus.yml:/etc/prometheus/prometheus.yml
       - /home/antony/apps/prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
