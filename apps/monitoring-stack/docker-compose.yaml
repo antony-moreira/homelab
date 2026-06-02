@@ -40,6 +40,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
       - "traefik.http.routers.netdata.rule=Host(`${NETDATA_DOMAIN}`) || Host(`${NETDATA_HOME_DOMAIN}`)"
       - "traefik.http.routers.netdata.entrypoints=websecure"
       - "traefik.http.routers.netdata.tls=true"
@@ -69,6 +70,7 @@ services:
       - netdata
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
       - "traefik.http.routers.prometheus.rule=Host(`${PROMETHEUS_DOMAIN}`) || Host(`${PROMETHEUS_HOME_DOMAIN}`)"
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls=true"
@@ -92,6 +94,7 @@ services:
       - prometheus
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
       - "traefik.http.routers.grafana.rule=Host(`${GRAFANA_DOMAIN}`) || Host(`${GRAFANA_HOME_DOMAIN}`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls=true"
