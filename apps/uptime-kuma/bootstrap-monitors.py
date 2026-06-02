@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Bootstrap Uptime Kuma monitors from homelab stack structure.
-Run once after initial deployment.
+Run once after initial deployment or to reset monitors.
 
 Usage:
     pip install uptime-kuma-api
@@ -11,36 +11,58 @@ Usage:
 """
 
 import argparse
-import sys
 from uptime_kuma_api import UptimeKumaApi, MonitorType, NotificationType
 
+# (container_name, display_name)
 STACKS = {
-    "📥 arrs-stack": ["📺 sonarr", "🎬 radarr", "🔍 prowlarr", "💬 bazarr", "🎯 overseerr", "🦦 homarr", "📥 qbittorrent"],
-    "🖥️ dashboard": ["🏠 homepage", "📊 dashdot"],
-    "📊 monitoring-stack": ["🔥 prometheus", "📈 grafana", "🐳 cadvisor", "🖥️ node-exporter", "🗄️ redis"],
-    "☁️ nextcloud": ["☁️ nextcloud", "🗃️ nextcloud-db"],
-    "🔀 traefik": ["🔀 traefik", "🌐 cloudflared"],
+    "📥 arrs-stack": [
+        ("sonarr",       "📺 sonarr"),
+        ("radarr",       "🎬 radarr"),
+        ("prowlarr",     "🔍 prowlarr"),
+        ("bazarr",       "💬 bazarr"),
+        ("overseerr",    "🎯 overseerr"),
+        ("homarr",       "🦦 homarr"),
+        ("qbittorrent",  "📥 qbittorrent"),
+    ],
+    "🖥️ dashboard": [
+        ("homepage",  "🏠 homepage"),
+        ("dashdot",   "📊 dashdot"),
+    ],
+    "📊 monitoring-stack": [
+        ("prometheus",     "🔥 prometheus"),
+        ("grafana",        "📈 grafana"),
+        ("netdata",        "🌡️ netdata"),
+        ("node-exporter",  "🖥️ node-exporter"),
+    ],
+    "☁️ nextcloud": [
+        ("nextcloud",    "☁️ nextcloud"),
+        ("nextcloud-db", "🗃️ nextcloud-db"),
+    ],
+    "🔀 traefik": [
+        ("traefik",     "🔀 traefik"),
+        ("cloudflared", "🌐 cloudflared"),
+    ],
 }
 
-# (container_name, friendly_name)
+# Individual monitors outside stacks
 SINGLES = [
-    ("dockhand",        "🐳 dockhand"),
-    ("filebrowser",     "📁 filebrowser"),
-    ("jellyfin",        "🎵 jellyfin"),
-    ("plex",            "🎥 plex"),
-    ("watchtower",      "👁️ watchtower"),
-    ("tailscale",       "🔒 tailscale"),
-    ("adguardhome-sync","🛡️ adguardhome-sync"),
-    ("uptime-kuma",     "💚 uptime-kuma"),
-    ("mcp-ssh-server",  "🔑 mcp-ssh-server"),
+    ("dockhand",         "🐳 dockhand"),
+    ("filebrowser",      "📁 filebrowser"),
+    ("jellyfin",         "🎵 jellyfin"),
+    ("plex",             "🎥 plex"),
+    ("watchtower",       "👁️ watchtower"),
+    ("tailscale",        "🔒 tailscale"),
+    ("adguardhome-sync", "🛡️ adguardhome-sync"),
+    ("uptime-kuma",      "💚 uptime-kuma"),
+    ("mcp-ssh-server",   "🔑 mcp-ssh-server"),
 ]
 
 
-def add_docker_monitor(api, name, docker_host_id, parent_id=None, notification_ids=None):
+def add_docker_monitor(api, display_name, container_name, docker_host_id, parent_id=None, notification_ids=None):
     kwargs = {
         "type": MonitorType.DOCKER,
-        "name": name,
-        "docker_container": name,
+        "name": display_name,
+        "docker_container": container_name,
         "docker_host": docker_host_id,
         "interval": 60,
     }
@@ -50,7 +72,7 @@ def add_docker_monitor(api, name, docker_host_id, parent_id=None, notification_i
         kwargs["notification_id_list"] = {str(nid): True for nid in notification_ids}
 
     result = api.add_monitor(**kwargs)
-    print(f"  + {name}")
+    print(f"  + {display_name} ({container_name})")
     return result["monitorID"]
 
 
@@ -102,13 +124,13 @@ def main():
             name=stack_name,
         )
         group_id = group["monitorID"]
-        for container in containers:
-            add_docker_monitor(api, container, docker_host_id, group_id, notification_ids)
+        for container_name, display_name in containers:
+            add_docker_monitor(api, display_name, container_name, docker_host_id, group_id, notification_ids)
 
     # Create individual monitors
     print("\n[individual]")
-    for container in SINGLES:
-        add_docker_monitor(api, container, docker_host_id, notification_ids=notification_ids)
+    for container_name, display_name in SINGLES:
+        add_docker_monitor(api, display_name, container_name, docker_host_id, notification_ids=notification_ids)
 
     print("\nDone.")
     api.disconnect()

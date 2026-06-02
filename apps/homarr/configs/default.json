@@ -1,0 +1,609 @@
+{
+  "schemaVersion": 2,
+  "configProperties": {
+    "name": "default"
+  },
+  "categories": [
+    {
+      "id": "cat-media",
+      "name": "Media",
+      "position": 0
+    },
+    {
+      "id": "cat-infra",
+      "name": "Infraestrutura",
+      "position": 2
+    },
+    {
+      "id": "cat-downloads",
+      "name": "Downloads",
+      "position": 1
+    }
+  ],
+  "wrappers": [
+    {
+      "id": "default",
+      "position": 0
+    }
+  ],
+  "apps": [
+    {
+      "id": "app-adguard-secondary",
+      "name": "AdGuard Secondary",
+      "url": "http://192.168.3.200:80",
+      "behaviour": {
+        "onClickUrl": "https://adguard-secondary.home.tonho.app.br",
+        "externalUrl": "https://adguard-secondary.home.tonho.app.br",
+        "isOpeningNewTab": true
+      },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/adguard-home.png",
+        "appNameStatus": "normal",
+        "positionAppName": "column",
+        "lineClampAppName": 1,
+        "appNameFontSize": 16
+      },
+      "integration": {
+        "type": "adGuardHome",
+        "properties": [
+          { "field": "username", "type": "public", "value": "admin" },
+          { "field": "password", "type": "private", "value": "" }
+        ]
+      },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 3, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 3, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 0, "y": 1 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-traefik",
+      "name": "Traefik",
+      "url": "https://traefik.home.tonho.app.br",
+      "behaviour": { "onClickUrl": "https://traefik.home.tonho.app.br", "externalUrl": "https://traefik.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/traefik.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": { "type": null, "properties": [] },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 4, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 4, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 1, "y": 1 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-dockhand",
+      "name": "Dockhand",
+      "url": "https://dockhand.home.tonho.app.br",
+      "behaviour": { "onClickUrl": "https://dockhand.home.tonho.app.br", "externalUrl": "https://dockhand.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/docker.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": { "type": null, "properties": [] },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 5, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 5, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 2, "y": 1 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-filebrowser",
+      "name": "Filebrowser",
+      "url": "https://filebrowser.home.tonho.app.br",
+      "behaviour": { "onClickUrl": "https://filebrowser.home.tonho.app.br", "externalUrl": "https://filebrowser.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/filebrowser.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": { "type": null, "properties": [] },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 6, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 0, "y": 1 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 0, "y": 2 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-proxmox-leon",
+      "name": "Proxmox Leon",
+      "url": "https://192.168.3.10:8006",
+      "behaviour": { "onClickUrl": "https://proxmox-leon.home.tonho.app.br", "externalUrl": "https://proxmox-leon.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/proxmox.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": { "type": null, "properties": [] },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 0, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 0, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-proxmox-claire",
+      "name": "Proxmox Claire",
+      "url": "https://192.168.3.20:8006",
+      "behaviour": { "onClickUrl": "https://proxmox-claire.home.tonho.app.br", "externalUrl": "https://proxmox-claire.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/proxmox.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": { "type": null, "properties": [] },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 1, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 1, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 1, "y": 0 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-adguard",
+      "name": "AdGuard Home",
+      "url": "http://192.168.3.100:80",
+      "behaviour": { "onClickUrl": "https://adguard.home.tonho.app.br", "externalUrl": "https://adguard.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/adguard-home.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": {
+        "type": "adGuardHome",
+        "properties": [
+          { "field": "username", "type": "public", "value": "admin" },
+          { "field": "password", "type": "private", "value": "" }
+        ]
+      },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 2, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 2, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 2, "y": 0 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "4c437c15-61ce-4253-b962-25c03567f9f9",
+      "name": "Nextcloud",
+      "url": "https://nextcloud.home.tonho.app.br",
+      "behaviour": { "isOpeningNewTab": true, "externalUrl": "https://nextcloud.home.tonho.app.br/" },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200", "301", "302", "304", "307", "308"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg/nextcloud-blue.svg",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": { "type": null, "properties": [] },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 0, "y": 1 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 1, "y": 1 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-grafana",
+      "name": "Grafana",
+      "url": "https://grafana.home.tonho.app.br",
+      "behaviour": { "onClickUrl": "https://grafana.home.tonho.app.br", "externalUrl": "https://grafana.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/grafana.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": { "type": null, "properties": [] },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 1, "y": 1 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 1, "y": 1 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 0, "y": 2 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-netdata",
+      "name": "Netdata",
+      "url": "https://netdata.home.tonho.app.br",
+      "behaviour": { "onClickUrl": "https://netdata.home.tonho.app.br", "externalUrl": "https://netdata.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/netdata.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": { "type": null, "properties": [] },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 2, "y": 1 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 2, "y": 1 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 1, "y": 2 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-prometheus",
+      "name": "Prometheus",
+      "url": "https://prometheus.home.tonho.app.br",
+      "behaviour": { "onClickUrl": "https://prometheus.home.tonho.app.br", "externalUrl": "https://prometheus.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/prometheus.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": { "type": null, "properties": [] },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 3, "y": 1 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 3, "y": 1 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 2, "y": 2 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-uptime-kuma",
+      "name": "Uptime Kuma",
+      "url": "https://uptime-kuma.home.tonho.app.br",
+      "behaviour": { "onClickUrl": "https://uptime-kuma.home.tonho.app.br", "externalUrl": "https://uptime-kuma.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/uptime-kuma.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": { "type": null, "properties": [] },
+      "area": { "type": "category", "properties": { "id": "cat-infra" } },
+      "shape": {
+        "lg": { "location": { "x": 4, "y": 1 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 4, "y": 1 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 3, "y": 2 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-jellyfin",
+      "name": "Jellyfin",
+      "url": "http://192.168.3.110:8096",
+      "behaviour": { "onClickUrl": "https://jellyfin.home.tonho.app.br", "externalUrl": "https://jellyfin.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/jellyfin.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": {
+        "type": "jellyfin",
+        "properties": [{ "field": "apiKey", "type": "private", "value": "" }]
+      },
+      "area": { "type": "category", "properties": { "id": "cat-media" } },
+      "shape": {
+        "lg": { "location": { "x": 0, "y": 2 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 0, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-plex",
+      "name": "Plex",
+      "url": "https://plex.home.tonho.app.br",
+      "behaviour": { "onClickUrl": "https://plex.home.tonho.app.br", "externalUrl": "https://plex.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200", "401"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/plex.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": { "type": null, "properties": [] },
+      "area": { "type": "category", "properties": { "id": "cat-media" } },
+      "shape": {
+        "lg": { "location": { "x": 1, "y": 2 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 1, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 1, "y": 0 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-overseerr",
+      "name": "Overseerr",
+      "url": "http://192.168.3.110:5055",
+      "behaviour": { "onClickUrl": "https://overseerr.home.tonho.app.br", "externalUrl": "https://overseerr.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/overseerr.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": {
+        "type": "overseerr",
+        "properties": [{ "field": "apiKey", "type": "private", "value": "" }]
+      },
+      "area": { "type": "category", "properties": { "id": "cat-media" } },
+      "shape": {
+        "lg": { "location": { "x": 2, "y": 2 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 2, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 2, "y": 0 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-sonarr",
+      "name": "Sonarr",
+      "url": "http://192.168.3.110:8989",
+      "behaviour": { "onClickUrl": "https://sonarr.home.tonho.app.br", "externalUrl": "https://sonarr.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/sonarr.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": {
+        "type": "sonarr",
+        "properties": [{ "field": "apiKey", "type": "private", "value": "" }]
+      },
+      "area": { "type": "category", "properties": { "id": "cat-downloads" } },
+      "shape": {
+        "lg": { "location": { "x": 0, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 0, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-radarr",
+      "name": "Radarr",
+      "url": "http://192.168.3.110:7878",
+      "behaviour": { "onClickUrl": "https://radarr.home.tonho.app.br", "externalUrl": "https://radarr.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/radarr.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": {
+        "type": "radarr",
+        "properties": [{ "field": "apiKey", "type": "private", "value": "" }]
+      },
+      "area": { "type": "category", "properties": { "id": "cat-downloads" } },
+      "shape": {
+        "lg": { "location": { "x": 1, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 1, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 1, "y": 0 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-prowlarr",
+      "name": "Prowlarr",
+      "url": "http://192.168.3.110:9696",
+      "behaviour": { "onClickUrl": "https://prowlarr.home.tonho.app.br", "externalUrl": "https://prowlarr.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/prowlarr.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": {
+        "type": "prowlarr",
+        "properties": [{ "field": "apiKey", "type": "private", "value": "" }]
+      },
+      "area": { "type": "category", "properties": { "id": "cat-downloads" } },
+      "shape": {
+        "lg": { "location": { "x": 2, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 2, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 2, "y": 0 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-bazarr",
+      "name": "Bazarr",
+      "url": "http://192.168.3.110:6767",
+      "behaviour": { "onClickUrl": "https://bazarr.home.tonho.app.br", "externalUrl": "https://bazarr.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/bazarr.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": {
+        "type": "bazarr",
+        "properties": [{ "field": "apiKey", "type": "private", "value": "" }]
+      },
+      "area": { "type": "category", "properties": { "id": "cat-downloads" } },
+      "shape": {
+        "lg": { "location": { "x": 3, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 3, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 0, "y": 1 }, "size": { "width": 1, "height": 1 } }
+      }
+    },
+    {
+      "id": "app-qbittorrent",
+      "name": "qBittorrent",
+      "url": "http://192.168.3.110:8080",
+      "behaviour": { "onClickUrl": "https://qbittorrent.home.tonho.app.br", "externalUrl": "https://qbittorrent.home.tonho.app.br", "isOpeningNewTab": true },
+      "network": { "enabledStatusChecker": true, "statusCodes": ["200"] },
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/qbittorrent.png",
+        "appNameStatus": "normal", "positionAppName": "column", "lineClampAppName": 1, "appNameFontSize": 16
+      },
+      "integration": {
+        "type": "qBittorrent",
+        "properties": [
+          { "field": "username", "type": "public", "value": "antony" },
+          { "field": "password", "type": "private", "value": "" }
+        ]
+      },
+      "area": { "type": "category", "properties": { "id": "cat-downloads" } },
+      "shape": {
+        "lg": { "location": { "x": 4, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 4, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "sm": { "location": { "x": 1, "y": 1 }, "size": { "width": 1, "height": 1 } }
+      }
+    }
+  ],
+  "widgets": [
+    {
+      "id": "611db1f5-3291-4061-860d-509f3dfd347e",
+      "type": "widget-datetime",
+      "properties": {
+        "display24HourFormat": true,
+        "dateFormat": "dddd, DD/MM/YYYY",
+        "enableTimezone": false,
+        "timezoneLocation": { "name": "Sao Paulo", "latitude": -23.5505, "longitude": -46.6333 },
+        "titleState": "city"
+      },
+      "area": { "type": "wrapper", "properties": { "id": "default" } },
+      "shape": {
+        "lg": { "location": { "x": 0, "y": 0 }, "size": { "width": 3, "height": 1 } },
+        "md": { "location": { "x": 0, "y": 0 }, "size": { "width": 3, "height": 1 } },
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 3, "height": 1 } }
+      }
+    },
+    {
+      "id": "006393be-2f5b-4737-b38e-d4a072d47c5f",
+      "type": "widget-calendar",
+      "properties": { "filterFutureMonths": 2, "filterPastDays": 14, "useReleaseDate": false, "radarrArr": true, "sonarrArr": true },
+      "area": { "type": "sidebar", "properties": { "location": "left" } },
+      "shape": {
+        "lg": { "location": { "x": 0, "y": 0 }, "size": { "width": 2, "height": 5 } },
+        "md": { "location": { "x": 0, "y": 0 }, "size": { "width": 2, "height": 5 } },
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 2, "height": 5 } }
+      }
+    },
+    {
+      "id": "23d03704-ce6f-43b0-9494-b2688ffbd786",
+      "type": "widget-torrent",
+      "properties": { "displayCompletedTorrents": false, "displayStoppedTorrents": false },
+      "area": { "type": "sidebar", "properties": { "location": "left" } },
+      "shape": {
+        "lg": { "location": { "x": 0, "y": 5 }, "size": { "width": 2, "height": 4 } },
+        "md": { "location": { "x": 0, "y": 5 }, "size": { "width": 2, "height": 4 } },
+        "sm": { "location": { "x": 0, "y": 5 }, "size": { "width": 2, "height": 4 } }
+      }
+    },
+    {
+      "id": "0d6ee3a0-8d67-439e-b7be-239a5927bb62",
+      "type": "widget-dns",
+      "properties": { "usePiHoleColors": false, "showNumberOfDnsQueries": true, "showNumberOfBlockedDnsQueries": true, "showPercentageBlockedQueries": true, "showNumberOfDomainsOnAdlist": false },
+      "area": { "type": "sidebar", "properties": { "location": "left" } },
+      "shape": {
+        "lg": { "location": { "x": 0, "y": 9 }, "size": { "width": 2, "height": 3 } },
+        "md": { "location": { "x": 0, "y": 9 }, "size": { "width": 2, "height": 3 } },
+        "sm": { "location": { "x": 0, "y": 9 }, "size": { "width": 2, "height": 3 } }
+      }
+    },
+    {
+      "id": "1a73ef27-db8d-40b7-99d0-71ec33106405",
+      "type": "widget-media-requests",
+      "properties": {},
+      "area": { "type": "sidebar", "properties": { "location": "left" } },
+      "shape": {
+        "lg": { "location": { "x": 0, "y": 12 }, "size": { "width": 2, "height": 3 } },
+        "md": { "location": { "x": 0, "y": 12 }, "size": { "width": 2, "height": 3 } },
+        "sm": { "location": { "x": 0, "y": 12 }, "size": { "width": 2, "height": 3 } }
+      }
+    },
+    {
+      "id": "63b4a010-d6bf-4be6-8722-26dc2669c075",
+      "type": "media-requests-list",
+      "properties": { "replaceLinksWithExternalHost": true, "openInNewTab": true },
+      "area": { "type": "category", "properties": { "id": "cat-media" } },
+      "shape": {
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 3, "height": 2 } },
+        "md": { "location": { "x": 0, "y": 1 }, "size": { "width": 3, "height": 2 } },
+        "lg": { "location": { "x": 0, "y": 0 }, "size": { "width": 3, "height": 2 } }
+      }
+    },
+    {
+      "id": "d4243d34-269e-4671-a21d-f234cb31ae72",
+      "type": "calendar",
+      "properties": { "hideWeekDays": true, "showUnmonitored": false, "radarrReleaseType": "inCinemas", "fontSize": "xs" },
+      "area": { "type": "category", "properties": { "id": "cat-media" } },
+      "shape": {
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 2, "height": 2 } },
+        "md": { "location": { "x": 3, "y": 0 }, "size": { "width": 3, "height": 3 } },
+        "lg": { "location": { "x": 3, "y": 0 }, "size": { "width": 2, "height": 2 } }
+      }
+    },
+    {
+      "id": "be21862e-8c84-4e15-b226-62deb27b5591",
+      "type": "dlspeed",
+      "properties": {},
+      "area": { "type": "sidebar", "properties": { "location": "left" } },
+      "shape": {
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 2, "height": 2 } },
+        "md": { "location": { "x": 0, "y": 8 }, "size": { "width": 2, "height": 2 } },
+        "lg": { "location": { "x": 0, "y": 0 }, "size": { "width": 2, "height": 2 } }
+      }
+    },
+    {
+      "id": "28db5cc7-8fda-4b1a-b87c-6ff8a88ba2f1",
+      "type": "dns-hole-controls",
+      "properties": { "showToggleAllButtons": true },
+      "area": { "type": "sidebar", "properties": { "location": "left" } },
+      "shape": {
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 2, "height": 1 } },
+        "md": { "location": { "x": 0, "y": 4 }, "size": { "width": 2, "height": 1 } },
+        "lg": { "location": { "x": 0, "y": 8 }, "size": { "width": 2, "height": 1 } }
+      }
+    },
+    {
+      "id": "63b836b7-943c-4104-aef5-529075fe503a",
+      "type": "dns-hole-summary",
+      "properties": { "usePiHoleColors": true, "layout": "grid" },
+      "area": { "type": "sidebar", "properties": { "location": "left" } },
+      "shape": {
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 2, "height": 1 } },
+        "md": { "location": { "x": 0, "y": 2 }, "size": { "width": 2, "height": 2 } },
+        "lg": { "location": { "x": 0, "y": 6 }, "size": { "width": 2, "height": 1 } }
+      }
+    },
+    {
+      "id": "18ea7f60-0c03-41d5-9a78-58756b651481",
+      "type": "dashdot",
+      "properties": {
+        "dashName": "Dash.",
+        "url": "https://dashdot.home.tonho.app.br/",
+        "usePercentages": true,
+        "columns": 2,
+        "graphHeight": 115,
+        "graphsOrder": [
+          { "key": "storage", "subValues": { "enabled": true, "compactView": true, "span": 2, "multiView": false } },
+          { "key": "network", "subValues": { "enabled": true, "compactView": true, "span": 2 } },
+          { "key": "cpu", "subValues": { "enabled": true, "multiView": false, "span": 1 } },
+          { "key": "ram", "subValues": { "enabled": true, "span": 1 } },
+          { "key": "gpu", "subValues": { "enabled": false, "span": 1 } }
+        ]
+      },
+      "area": { "type": "sidebar", "properties": { "location": "left" } },
+      "shape": {
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 2, "height": 2 } },
+        "md": { "location": { "x": 0, "y": 0 }, "size": { "width": 2, "height": 2 } },
+        "lg": { "location": { "x": 0, "y": 0 }, "size": { "width": 2, "height": 2 } }
+      }
+    },
+    {
+      "id": "c5c6c9aa-727e-4311-80ba-e53aedc639e3",
+      "type": "indexer-manager",
+      "properties": { "openIndexerSiteInNewTab": true },
+      "area": { "type": "sidebar", "properties": { "location": "left" } },
+      "shape": {
+        "sm": { "location": { "x": 0, "y": 0 }, "size": { "width": 1, "height": 1 } },
+        "md": { "location": { "x": 0, "y": 5 }, "size": { "width": 2, "height": 3 } },
+        "lg": { "location": { "x": 0, "y": 9 }, "size": { "width": 1, "height": 1 } }
+      }
+    }
+  ],
+  "settings": {
+    "common": {
+      "searchEngine": { "type": "google", "properties": {} }
+    },
+    "customization": {
+      "layout": {
+        "enabledLeftSidebar": true,
+        "enabledRightSidebar": false,
+        "enabledDocker": false,
+        "enabledPing": true,
+        "enabledSearchbar": true
+      },
+      "pageTitle": "Homelab",
+      "logoImageUrl": "/imgs/logo/logo.png",
+      "faviconUrl": "/imgs/favicon/favicon-squared.png",
+      "backgroundImageUrl": "",
+      "customCss": "",
+      "colors": { "primary": "blue", "secondary": "gray", "shade": 7 },
+      "appOpacity": 100,
+      "gridstack": { "columnCountSmall": 3, "columnCountMedium": 6, "columnCountLarge": 10 }
+    },
+    "access": { "allowGuests": false }
+  }
+}
