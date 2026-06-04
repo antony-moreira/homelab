@@ -14,6 +14,20 @@ Documentação completa da infraestrutura, stacks Docker e procedimentos do home
 - [Traefik](#traefik)
 - [Dockhand](#dockhand)
 - [Apps Docker](#apps-docker)
+  - [Dashboard](#dashboard-homepage--dashdot)
+  - [Arrs Stack](#arrs-stack-media)
+  - [Jellyfin](#jellyfin)
+  - [Plex](#plex)
+  - [Monitoring Stack](#monitoring-stack-netdata--prometheus--grafana)
+  - [Nextcloud](#nextcloud)
+  - [Syncthing](#syncthing)
+  - [Filebrowser](#filebrowser)
+  - [Uptime Kuma](#uptime-kuma)
+  - [Heimdall](#heimdall)
+  - [AdGuard Home Sync](#adguard-home-sync)
+  - [Time Machine](#time-machine)
+  - [Tailscale](#tailscale)
+  - [Watchtower](#watchtower)
 - [Containers LXC](#containers-lxc)
 - [MCP SSH Server](#mcp-ssh-server)
 - [Scripts de Manutenção](#scripts-de-manutenção)
@@ -126,22 +140,20 @@ chmod 600 /home/<user>/apps/traefik/acme.json
 ├── traefik/
 ├── dockhand/
 ├── adguardhome-sync/
+├── arrs-stack/          # homarr, overseerr, prowlarr, radarr, sonarr, bazarr, qbittorrent
+├── dashboard/           # homepage, dashdot
 ├── jellyfin/
 ├── plex/
-├── sonarr/
-├── radarr/
-├── bazarr/
-├── prowlarr/
-├── overseerr/
-├── qbittorrent/
-├── homarr/
+├── nextcloud/           # nextcloud + nextcloud-db (MariaDB)
+├── monitoring-stack/    # netdata, node-exporter, prometheus, grafana
 ├── syncthing/
 ├── filebrowser/
 ├── uptime-kuma/
-├── grafana/
-├── prometheus/
+├── heimdall/
 ├── tailscale/
-└── ...
+├── watchtower/
+├── time-machine/
+└── mcp-ssh-server/
 ```
 
 ### Fluxo de deploy com Dockhand
@@ -317,22 +329,61 @@ Roda em modo host (necessário para discovery na rede local).
 
 ---
 
-### Monitoring Stack (Prometheus + Grafana + cAdvisor)
+### Monitoring Stack (Netdata + Prometheus + Grafana)
 
 **Stack:** `apps/monitoring-stack/`
 
 | Container | Porta | URL |
 |---|---|---|
+| Netdata | `19999` | `netdata.home.seudominio.com` |
 | Prometheus | `9090` | `prometheus.home.seudominio.com` |
-| Grafana | `3002` | `grafana.home.seudominio.com` |
-| Node Exporter | `9100` | interno |
-| cAdvisor | `8081` | interno |
-| Redis | `6379` | interno (dependência cAdvisor) |
+| Grafana | `3003` | `grafana.home.seudominio.com` |
+| Node Exporter | host network | interno |
+
+Netdata coleta métricas e as expõe para o Prometheus via `/api/v1/allmetrics?format=prometheus`. Grafana visualiza os dados do Prometheus.
 
 **Configuração manual:**
-- `prometheus.yml` em `/home/<user>/apps/prometheus/prometheus.yml`
-- Datasources do Grafana em `/home/<user>/apps/grafana/provisioning/datasources/`
+- `prometheus.yml` → copiar para `/home/<user>/apps/monitoring-stack/prometheus.yml` no servidor (Dockhand não sincroniza arquivos extras)
+- Datasources do Grafana em `/home/<user>/apps/grafana/provisioning/datasources/prometheus.yml`
 - Grafana login padrão: `admin/admin` (trocar no primeiro acesso)
+- Netdata também conecta ao Netdata Cloud (painel em `app.netdata.cloud`)
+
+---
+
+### Nextcloud
+
+**Stack:** `apps/nextcloud/`  
+**Porta:** `8383`  
+**URL:** `nextcloud.home.seudominio.com` / `nextcloud.seudominio.com`
+
+Servidor de arquivos e produtividade self-hosted.
+
+| Container | Imagem | Função |
+|---|---|---|
+| `nextcloud` | `nextcloud:latest` | App principal |
+| `nextcloud-db` | `mariadb:lts` | Banco de dados |
+
+**Volumes no servidor:**
+- `/home/<user>/apps/nextcloud/config` → config PHP
+- `/home/<user>/apps/nextcloud/data` → dados dos usuários
+- `/home/<user>/apps/nextcloud/db` → dados do MariaDB
+
+**Configuração pós-deploy:**
+1. Acessar a URL → setup wizard
+2. Usar credenciais definidas nas vars `NEXTCLOUD_ADMIN_USER` e `NEXTCLOUD_ADMIN_PASSWORD`
+3. Banco é configurado automaticamente via variáveis de ambiente
+
+**Manutenção via CLI (dentro do container):**
+```bash
+# Rodar comandos occ
+docker exec -u 1000 nextcloud php occ <comando>
+
+# Exemplo: forçar upgrade após atualização de imagem
+docker exec -u 1000 nextcloud php occ upgrade
+```
+
+> Se aparecer "Cannot write into config directory", corrigir permissões:
+> `docker exec nextcloud chown -R www-data:www-data /var/www/html/config`
 
 ---
 
@@ -342,7 +393,7 @@ Roda em modo host (necessário para discovery na rede local).
 **Porta:** `8384`  
 **URL:** `syncthing.home.seudominio.com`
 
-Sincronização de arquivos P2P. Ajustar path do volume de sync no compose.
+Sincronização de arquivos P2P. Volume de sync: `/mnt/homelab-hd-interno/SYNCTHING`.
 
 ---
 
@@ -359,10 +410,19 @@ Navegador de arquivos web. Login padrão: `admin/admin` (trocar no primeiro aces
 ### Uptime Kuma
 
 **Stack:** `apps/uptime-kuma/`  
-**Porta:** `3001`  
 **URL:** `uptime-kuma.home.seudominio.com`
 
-Monitor de disponibilidade de serviços.
+Monitor de disponibilidade de serviços. Sem porta de host exposta — acesso exclusivamente via Traefik.
+
+---
+
+### Heimdall
+
+**Stack:** `apps/heimdall/`  
+**Portas:** `81:80`, `446:443`  
+**URL:** `heimdall.home.seudominio.com`
+
+Dashboard de links para serviços. Alternativa ao Homepage para acesso rápido.
 
 ---
 
