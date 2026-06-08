@@ -84,8 +84,7 @@ services:
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/radarr:/config
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Filmes:/movies
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads
+      - /mnt/homelab-hd-externo/MEDIA_CENTER:/data
     ports:
       - 7878:7878
     labels:
@@ -108,8 +107,7 @@ services:
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/sonarr:/config
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/tv
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads
+      - /mnt/homelab-hd-externo/MEDIA_CENTER:/data
     ports:
       - 8989:8989
     labels:
@@ -132,8 +130,7 @@ services:
       - TZ=America/Sao_Paulo
     volumes:
       - /home/antony/apps/bazarr:/config
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Filmes:/movies
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Series:/tv
+      - /mnt/homelab-hd-externo/MEDIA_CENTER:/data
     ports:
       - 6767:6767
     labels:
@@ -157,7 +154,7 @@ services:
       - WEBUI_PORT=8080
     volumes:
       - /home/antony/apps/qbittorrent:/config
-      - /mnt/homelab-hd-externo/MEDIA_CENTER/Downloads:/downloads
+      - /mnt/homelab-hd-externo/MEDIA_CENTER:/data
     ports:
       - 8080:8080
       - 6881:6881

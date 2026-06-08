@@ -285,10 +285,37 @@ Todos os apps abaixo rodam no servidor principal via Docker Compose, gerenciados
 | Bazarr | `6767` | `bazarr.home.seudominio.com` |
 | qBittorrent | `8080` | `qbittorrent.home.seudominio.com` |
 
-**Volumes de mídia** (ajustar paths no compose):
-- `Downloads` → qBittorrent + Radarr + Sonarr
-- `Filmes` → Radarr + Bazarr
-- `Series` → Sonarr + Bazarr
+**Volumes de mídia — mount único para hardlinks:**
+
+Radarr, Sonarr, qBittorrent e Bazarr montam **um único volume** `/data` (não subpastas separadas):
+```yaml
+- /mnt/homelab-hd-externo/MEDIA_CENTER:/data
+```
+
+Estrutura interna (`/data` no container = `MEDIA_CENTER` no host):
+| Path interno | Conteúdo |
+|---|---|
+| `/data/Downloads` | qBittorrent save path |
+| `/data/Filmes` | Radarr root folder |
+| `/data/Series` | Sonarr root folder |
+
+> **Por que mount único:** hardlinks só funcionam dentro do mesmo mount. Com `/movies` + `/downloads` separados (bind mounts distintos), o import vira **cópia** (dobra espaço, gasta CPU/IO). Com `/data` único, Radarr/Sonarr criam **hardlink** do download para a biblioteca → import instantâneo, zero espaço extra, seed continua do mesmo arquivo. Ver [TRaSH Guides — Hardlinks](https://trash-guides.info/Hardlinks/Hardlinks-and-Instant-Moves/).
+
+> **Validar hardlink:**
+> ```bash
+> docker exec radarr sh -c 'touch /data/Downloads/.hl && ln /data/Downloads/.hl /data/Filmes/.hl && echo OK; rm -f /data/Downloads/.hl /data/Filmes/.hl'
+> ```
+> Se retornar `Cross-device link` → mounts ainda separados (hardlink quebrado).
+
+> **Plex e Jellyfin não precisam de `/data`** — só leem a biblioteca final (`Filmes`/`Series`). Mantêm mounts próprios, sem impacto em watch history.
+
+**Configuração interna (root folders / save path):**
+- Radarr → Settings → Media Management → Root Folder: `/data/Filmes`
+- Sonarr → Settings → Media Management → Root Folder: `/data/Series`
+- qBittorrent → Options → Downloads → Save Path: `/data/Downloads`, Incomplete: `/data/Downloads/incomplete`
+- Bazarr usa paths do Radarr/Sonarr (path_mappings vazio) — funciona automático com `/data`
+
+> **Migração de mounts separados → `/data`** (remap sem mover arquivos): usar Radarr `movie/editor` e Sonarr `series/editor` API com `moveFiles:false` (só atualiza paths no DB, arquivos ficam no lugar). Atualizar também Radarr **collections** (`rootFolderPath`) e qBittorrent torrents ativos via `setLocation` + recheck.
 
 **Configuração pós-deploy:**
 1. Acessar Prowlarr → adicionar indexers
