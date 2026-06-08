@@ -364,13 +364,59 @@ Roda em modo host (necessário para discovery na rede local).
 | Grafana | `3003` | `grafana.home.seudominio.com` |
 | Node Exporter | host network | interno |
 
-Netdata coleta métricas e as expõe para o Prometheus via `/api/v1/allmetrics?format=prometheus`. Grafana visualiza os dados do Prometheus.
+Netdata (container no homelab) é o **parent** que agrega métricas. Prometheus faz scrape do parent. Grafana visualiza os dados do Prometheus.
 
 **Configuração manual:**
 - `prometheus.yml` → copiar para `/home/<user>/apps/monitoring-stack/prometheus.yml` no servidor (Dockhand não sincroniza arquivos extras)
 - Datasources do Grafana em `/home/<user>/apps/grafana/provisioning/datasources/prometheus.yml`
+- Dashboard: `apps/monitoring-stack/grafana-dashboard.json` → importar via Grafana UI (não sincroniza auto)
 - Grafana login padrão: `admin/admin` (trocar no primeiro acesso)
 - Netdata também conecta ao Netdata Cloud (painel em `app.netdata.cloud`)
+
+#### Monitoramento dos nodes Proxmox (Leon + Claire)
+
+Leon e Claire rodam **Netdata bare metal** (não LXC — sensores de hardware precisam de acesso direto). Cada um faz streaming das métricas para o parent (homelab).
+
+**Instalação em cada node:**
+```bash
+curl -Ss -L https://my-netdata.io/kickstart.sh > /tmp/netdata-install.sh
+bash /tmp/netdata-install.sh --non-interactive --stable-channel
+```
+
+**Streaming child → parent** — em cada node, `/etc/netdata/stream.conf`:
+```ini
+[stream]
+    enabled = yes
+    destination = <homelab-ip>:19999
+    api key = <STREAM_API_KEY>
+```
+
+**Parent aceita streaming** — dentro do container netdata, `/etc/netdata/stream.conf`:
+```ini
+[<STREAM_API_KEY>]
+    enabled = yes
+    allow from = 192.168.3.*
+```
+> Gerar `STREAM_API_KEY` via `uuidgen`. Uma key por node (mais controle).
+
+**Prometheus scrape** — usa format `prometheus_all_hosts` para expor todos os hosts com label `instance`:
+```yaml
+- job_name: 'netdata'
+  metrics_path: '/api/v1/allmetrics'
+  params:
+    format: ['prometheus_all_hosts']
+  honor_labels: true
+  static_configs:
+    - targets: ['netdata:19999']
+```
+
+**Queries Grafana:**
+- Métricas do homelab: filtrar `instance!~"leon|claire"` (senão soma os 3 nodes → valores errados)
+- Métricas dos nodes: filtrar `instance=~"leon|claire"`
+- Temperatura: `netdata_system_hw_sensor_temperature_input_degrees_Celsius_average{chart=~".*coretemp.*Package.*"}`
+- Temp disco: `netdata_smartctl_device_temperature_Celsius_average` (SSD/HD) ou `chart=~".*nvme.*Composite.*"` (NVMe)
+
+> Dashboard tem row "Proxmox Nodes" com CPU/RAM por node + bargauge de temperatura (CPU + disco) lado a lado.
 
 ---
 

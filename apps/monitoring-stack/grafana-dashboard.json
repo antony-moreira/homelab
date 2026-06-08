@@ -1,0 +1,1686 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "homelab-overview",
+    "namespace": "default",
+    "uid": "66bb5772-9005-49fd-b427-9148c04d45c0",
+    "resourceVersion": "1780929521682009",
+    "generation": 2,
+    "creationTimestamp": "2026-06-02T19:05:39Z",
+    "labels": {
+      "grafana.app/deprecatedInternalID": "3741955411779584"
+    },
+    "annotations": {
+      "grafana.app/createdBy": "user:dfnxiijavao74f",
+      "grafana.app/folder": "",
+      "grafana.app/saved-from-ui": "Grafana v13.0.2 (3fcdbc5a)",
+      "grafana.app/updatedBy": "user:dfnxiijavao74f",
+      "grafana.app/updatedTimestamp": "2026-06-08T14:38:41Z"
+    }
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "grafana",
+            "version": "v0",
+            "datasource": {
+              "name": "-- Grafana --"
+            },
+            "spec": {}
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "builtIn": true
+        }
+      }
+    ],
+    "cursorSync": "Crosshair",
+    "description": "Homelab system monitoring via Netdata + Prometheus",
+    "editable": true,
+    "elements": {
+      "panel-11": {
+        "kind": "Panel",
+        "spec": {
+          "id": 11,
+          "title": "Disk / (root) — Used vs Free",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "expr": "(node_filesystem_size_bytes{mountpoint=\"/\", fstype!=\"overlay\"} - node_filesystem_avail_bytes{mountpoint=\"/\", fstype!=\"overlay\"}) / 1024^3",
+                        "instant": true,
+                        "legendFormat": "Used"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "expr": "node_filesystem_avail_bytes{mountpoint=\"/\", fstype!=\"overlay\"} / 1024^3",
+                        "instant": true,
+                        "legendFormat": "Free"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "bargauge",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "displayMode": "gradient",
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": false
+                },
+                "maxVizHeight": 300,
+                "minVizHeight": 16,
+                "minVizWidth": 8,
+                "namePlacement": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                  "calcs": ["lastNotNull"],
+                  "fields": "",
+                  "values": false
+                },
+                "showUnfilled": true,
+                "sizing": "auto",
+                "text": {},
+                "valueMode": "color"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "decgbytes",
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [{"value": 0, "color": "green"}]
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {"id": "byFrameRefID", "options": "A"},
+                    "properties": [{"id": "color", "value": {"fixedColor": "semi-dark-orange", "mode": "fixed"}}]
+                  },
+                  {
+                    "matcher": {"id": "byFrameRefID", "options": "B"},
+                    "properties": [{"id": "color", "value": {"fixedColor": "semi-dark-green", "mode": "fixed"}}]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "panel-12": {
+        "kind": "Panel",
+        "spec": {
+          "id": 12,
+          "title": "Disk I/O (+ reads / - writes)",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "netdata_disk_io_KiB_persec_average{dimension=\"reads\"}",
+                        "legendFormat": "Read {{chart}}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "-netdata_disk_io_KiB_persec_average{dimension=\"writes\"}",
+                        "legendFormat": "Write {{chart}}"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "annotations": {"clustering": -1, "multiLane": false},
+                "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+                "tooltip": {"hideZeros": false, "mode": "multi", "sort": "desc"}
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "KBs",
+                  "thresholds": {"mode": "absolute", "steps": [{"value": 0, "color": "green"}]},
+                  "color": {"mode": "palette-classic"},
+                  "custom": {
+                    "axisBorderShow": false, "axisCenteredZero": true, "axisColorMode": "text",
+                    "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6,
+                    "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none",
+                    "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+                    "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+                    "scaleDistribution": {"type": "linear"}, "showPoints": "never", "showValues": false,
+                    "spanNulls": false, "stacking": {"group": "A", "mode": "none"},
+                    "thresholdsStyle": {"mode": "off"}
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-14": {
+        "kind": "Panel",
+        "spec": {
+          "id": 14,
+          "title": "HD Externo /mnt/homelab-hd-externo — Used vs Free",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "(node_filesystem_size_bytes{mountpoint=\"/mnt/homelab-hd-externo\"} - node_filesystem_avail_bytes{mountpoint=\"/mnt/homelab-hd-externo\"}) / 1024^3",
+                        "instant": true,
+                        "legendFormat": "Used"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "node_filesystem_avail_bytes{mountpoint=\"/mnt/homelab-hd-externo\"} / 1024^3",
+                        "instant": true,
+                        "legendFormat": "Free"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "bargauge",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "displayMode": "gradient",
+                "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": false},
+                "maxVizHeight": 300, "minVizHeight": 16, "minVizWidth": 8,
+                "namePlacement": "auto", "orientation": "horizontal",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showUnfilled": true, "sizing": "auto", "text": {}, "valueMode": "color"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "decgbytes", "min": 0,
+                  "thresholds": {"mode": "absolute", "steps": [{"value": 0, "color": "green"}]}
+                },
+                "overrides": [
+                  {
+                    "matcher": {"id": "byFrameRefID", "options": "A"},
+                    "properties": [{"id": "color", "value": {"fixedColor": "semi-dark-orange", "mode": "fixed"}}]
+                  },
+                  {
+                    "matcher": {"id": "byFrameRefID", "options": "B"},
+                    "properties": [{"id": "color", "value": {"fixedColor": "semi-dark-green", "mode": "fixed"}}]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "panel-16": {
+        "kind": "Panel",
+        "spec": {
+          "id": 16,
+          "title": "Disk Usage %",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "(node_filesystem_size_bytes{mountpoint=\"/\", fstype!=\"overlay\"} - node_filesystem_avail_bytes{mountpoint=\"/\", fstype!=\"overlay\"}) / node_filesystem_size_bytes{mountpoint=\"/\", fstype!=\"overlay\"} * 100",
+                        "instant": true,
+                        "legendFormat": "/ (root)"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "(node_filesystem_size_bytes{mountpoint=\"/mnt/homelab-hd-externo\"} - node_filesystem_avail_bytes{mountpoint=\"/mnt/homelab-hd-externo\"}) / node_filesystem_size_bytes{mountpoint=\"/mnt/homelab-hd-externo\"} * 100",
+                        "instant": true,
+                        "legendFormat": "/mnt (HD Externo)"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "bargauge",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "displayMode": "gradient",
+                "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": false},
+                "maxVizHeight": 300, "minVizHeight": 16, "minVizWidth": 8,
+                "namePlacement": "auto", "orientation": "horizontal",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showUnfilled": true, "sizing": "auto", "text": {}, "valueMode": "color"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent", "min": 0, "max": 100,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": 0, "color": "green"},
+                      {"value": 70, "color": "yellow"},
+                      {"value": 85, "color": "red"}
+                    ]
+                  },
+                  "color": {"mode": "thresholds"}
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-2": {
+        "kind": "Panel",
+        "spec": {
+          "id": 2,
+          "title": "CPU Usage",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "100 - netdata_system_cpu_percentage_average{dimension=\"idle\", instance!~\"leon|claire\"}",
+                        "legendFormat": "CPU %"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "background", "graphMode": "area", "justifyMode": "center",
+                "orientation": "auto", "percentChangeColorMode": "standard",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showPercentChange": false, "textMode": "auto", "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent", "min": 0, "max": 100,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": 0, "color": "green"},
+                      {"value": 70, "color": "yellow"},
+                      {"value": 90, "color": "red"}
+                    ]
+                  },
+                  "color": {"mode": "thresholds"}
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-21": {
+        "kind": "Panel",
+        "spec": {
+          "id": 21,
+          "title": "Network Traffic — Docker Bridges (+ in / - out)",
+          "description": "Netdata em Docker só enxerga interfaces bridge. Para ver interface física (eth0/ens*), seria necessário network_mode: host no Netdata.",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "netdata_net_net_kilobits_persec_average{dimension=\"received\"}",
+                        "legendFormat": "In {{chart}}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "-netdata_net_net_kilobits_persec_average{dimension=\"sent\"}",
+                        "legendFormat": "Out {{chart}}"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "annotations": {"clustering": -1, "multiLane": false},
+                "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+                "tooltip": {"hideZeros": false, "mode": "multi", "sort": "desc"}
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "Kbits",
+                  "thresholds": {"mode": "absolute", "steps": [{"value": 0, "color": "green"}]},
+                  "color": {"mode": "palette-classic"},
+                  "custom": {
+                    "axisBorderShow": false, "axisCenteredZero": true, "axisColorMode": "text",
+                    "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6,
+                    "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none",
+                    "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+                    "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+                    "scaleDistribution": {"type": "linear"}, "showPoints": "never", "showValues": false,
+                    "spanNulls": false, "stacking": {"group": "A", "mode": "none"},
+                    "thresholdsStyle": {"mode": "off"}
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-3": {
+        "kind": "Panel",
+        "spec": {
+          "id": 3,
+          "title": "RAM Usage",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "sum(netdata_system_ram_MiB_average{dimension=\"used\", instance!~\"leon|claire\"}) / sum(netdata_system_ram_MiB_average{instance!~\"leon|claire\"}) * 100",
+                        "legendFormat": "RAM %"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "background", "graphMode": "area", "justifyMode": "center",
+                "orientation": "auto", "percentChangeColorMode": "standard",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showPercentChange": false, "textMode": "auto", "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent", "min": 0, "max": 100,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": 0, "color": "green"},
+                      {"value": 70, "color": "yellow"},
+                      {"value": 90, "color": "red"}
+                    ]
+                  },
+                  "color": {"mode": "thresholds"}
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-31": {
+        "kind": "Panel",
+        "spec": {
+          "id": 31,
+          "title": "Container CPU %",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "sum by(cgroup_name) (netdata_cgroup_cpu_percentage_average) > 0.05",
+                        "legendFormat": "{{cgroup_name}}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "annotations": {"clustering": -1, "multiLane": false},
+                "legend": {"calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "right", "showLegend": true},
+                "tooltip": {"hideZeros": false, "mode": "multi", "sort": "desc"}
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent", "min": 0,
+                  "thresholds": {"mode": "absolute", "steps": [{"value": 0, "color": "green"}]},
+                  "color": {"mode": "palette-classic"},
+                  "custom": {
+                    "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text",
+                    "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6,
+                    "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none",
+                    "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+                    "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 1, "pointSize": 5,
+                    "scaleDistribution": {"type": "linear"}, "showPoints": "never", "showValues": false,
+                    "spanNulls": false, "stacking": {"group": "A", "mode": "none"},
+                    "thresholdsStyle": {"mode": "off"}
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-32": {
+        "kind": "Panel",
+        "spec": {
+          "id": 32,
+          "title": "Container Memory (MB)",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "sum by(cgroup_name) (netdata_cgroup_mem_usage_MiB_average) > 1",
+                        "legendFormat": "{{cgroup_name}}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "annotations": {"clustering": -1, "multiLane": false},
+                "legend": {"calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "right", "showLegend": true},
+                "tooltip": {"hideZeros": false, "mode": "multi", "sort": "desc"}
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "decmbytes", "min": 0,
+                  "thresholds": {"mode": "absolute", "steps": [{"value": 0, "color": "green"}]},
+                  "color": {"mode": "palette-classic"},
+                  "custom": {
+                    "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text",
+                    "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6,
+                    "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none",
+                    "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+                    "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 1, "pointSize": 5,
+                    "scaleDistribution": {"type": "linear"}, "showPoints": "never", "showValues": false,
+                    "spanNulls": false, "stacking": {"group": "A", "mode": "none"},
+                    "thresholdsStyle": {"mode": "off"}
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-4": {
+        "kind": "Panel",
+        "spec": {
+          "id": 4,
+          "title": "RAM Used",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "sum(netdata_system_ram_MiB_average{dimension=\"used\", instance!~\"leon|claire\"})",
+                        "legendFormat": "Used MB"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "value", "graphMode": "none", "justifyMode": "center",
+                "orientation": "auto", "percentChangeColorMode": "standard",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showPercentChange": false, "textMode": "auto", "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "decmbytes",
+                  "thresholds": {"mode": "absolute", "steps": [{"value": 0, "color": "blue"}]},
+                  "color": {"mode": "thresholds"}
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-5": {
+        "kind": "Panel",
+        "spec": {
+          "id": 5,
+          "title": "RAM Total",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "sum(netdata_system_ram_MiB_average{instance!~\"leon|claire\"})",
+                        "legendFormat": "Total MB"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "value", "graphMode": "none", "justifyMode": "center",
+                "orientation": "auto", "percentChangeColorMode": "standard",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showPercentChange": false, "textMode": "auto", "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "decmbytes",
+                  "thresholds": {"mode": "absolute", "steps": [{"value": 0, "color": "semi-dark-blue"}]},
+                  "color": {"mode": "thresholds"}
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-6": {
+        "kind": "Panel",
+        "spec": {
+          "id": 6,
+          "title": "CPU Usage by State",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "sum by(dimension) (netdata_system_cpu_percentage_average{dimension!=\"idle\", instance!~\"leon|claire\"})",
+                        "legendFormat": "{{dimension}}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "annotations": {"clustering": -1, "multiLane": false},
+                "legend": {"calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+                "tooltip": {"hideZeros": false, "mode": "multi", "sort": "desc"}
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent", "min": 0, "max": 100,
+                  "thresholds": {"mode": "absolute", "steps": [{"value": 0, "color": "green"}]},
+                  "color": {"mode": "palette-classic"},
+                  "custom": {
+                    "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text",
+                    "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6,
+                    "drawStyle": "line", "fillOpacity": 15, "gradientMode": "opacity",
+                    "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+                    "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+                    "scaleDistribution": {"type": "linear"}, "showPoints": "never", "showValues": false,
+                    "spanNulls": false, "stacking": {"group": "A", "mode": "normal"},
+                    "thresholdsStyle": {"mode": "off"}
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-7": {
+        "kind": "Panel",
+        "spec": {
+          "id": 7,
+          "title": "RAM Usage",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "netdata_system_ram_MiB_average{dimension=\"used\", instance!~\"leon|claire\"}",
+                        "legendFormat": "Used"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "netdata_system_ram_MiB_average{dimension=\"cached\", instance!~\"leon|claire\"}",
+                        "legendFormat": "Cached"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "netdata_system_ram_MiB_average{dimension=\"buffers\", instance!~\"leon|claire\"}",
+                        "legendFormat": "Buffers"
+                      }
+                    },
+                    "refId": "C",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "annotations": {"clustering": -1, "multiLane": false},
+                "legend": {"calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+                "tooltip": {"hideZeros": false, "mode": "multi", "sort": "desc"}
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "decmbytes", "min": 0,
+                  "thresholds": {"mode": "absolute", "steps": [{"value": 0, "color": "green"}]},
+                  "color": {"mode": "palette-classic"},
+                  "custom": {
+                    "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text",
+                    "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6,
+                    "drawStyle": "line", "fillOpacity": 15, "gradientMode": "opacity",
+                    "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+                    "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+                    "scaleDistribution": {"type": "linear"}, "showPoints": "never", "showValues": false,
+                    "spanNulls": false, "stacking": {"group": "A", "mode": "none"},
+                    "thresholdsStyle": {"mode": "off"}
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-40": {
+        "kind": "Panel",
+        "spec": {
+          "id": 40,
+          "title": "Leon — CPU %",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "100 - netdata_system_cpu_percentage_average{dimension=\"idle\", instance=\"leon\"}",
+                        "legendFormat": "Leon CPU %"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "background", "graphMode": "area", "justifyMode": "center",
+                "orientation": "auto", "percentChangeColorMode": "standard",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showPercentChange": false, "textMode": "auto", "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent", "min": 0, "max": 100,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": 0, "color": "green"},
+                      {"value": 70, "color": "yellow"},
+                      {"value": 90, "color": "red"}
+                    ]
+                  },
+                  "color": {"mode": "thresholds"}
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-41": {
+        "kind": "Panel",
+        "spec": {
+          "id": 41,
+          "title": "Claire — CPU %",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "100 - netdata_system_cpu_percentage_average{dimension=\"idle\", instance=\"claire\"}",
+                        "legendFormat": "Claire CPU %"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "background", "graphMode": "area", "justifyMode": "center",
+                "orientation": "auto", "percentChangeColorMode": "standard",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showPercentChange": false, "textMode": "auto", "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent", "min": 0, "max": 100,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": 0, "color": "green"},
+                      {"value": 70, "color": "yellow"},
+                      {"value": 90, "color": "red"}
+                    ]
+                  },
+                  "color": {"mode": "thresholds"}
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-42": {
+        "kind": "Panel",
+        "spec": {
+          "id": 42,
+          "title": "Leon — RAM %",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "sum(netdata_system_ram_MiB_average{dimension=\"used\", instance=\"leon\"}) / sum(netdata_system_ram_MiB_average{instance=\"leon\"}) * 100",
+                        "legendFormat": "Leon RAM %"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "background", "graphMode": "area", "justifyMode": "center",
+                "orientation": "auto", "percentChangeColorMode": "standard",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showPercentChange": false, "textMode": "auto", "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent", "min": 0, "max": 100,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": 0, "color": "green"},
+                      {"value": 70, "color": "yellow"},
+                      {"value": 90, "color": "red"}
+                    ]
+                  },
+                  "color": {"mode": "thresholds"}
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-43": {
+        "kind": "Panel",
+        "spec": {
+          "id": 43,
+          "title": "Claire — RAM %",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "sum(netdata_system_ram_MiB_average{dimension=\"used\", instance=\"claire\"}) / sum(netdata_system_ram_MiB_average{instance=\"claire\"}) * 100",
+                        "legendFormat": "Claire RAM %"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "background", "graphMode": "area", "justifyMode": "center",
+                "orientation": "auto", "percentChangeColorMode": "standard",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showPercentChange": false, "textMode": "auto", "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent", "min": 0, "max": 100,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": 0, "color": "green"},
+                      {"value": 70, "color": "yellow"},
+                      {"value": 90, "color": "red"}
+                    ]
+                  },
+                  "color": {"mode": "thresholds"}
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-44": {
+        "kind": "Panel",
+        "spec": {
+          "id": 44,
+          "title": "Leon — Temperatura",
+          "description": "Leon: CPU package (coretemp) + disco SSD (smartctl).",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "netdata_system_hw_sensor_temperature_input_degrees_Celsius_average{instance=\"leon\", chart=~\".*coretemp.*Package.*\"}",
+                        "instant": true,
+                        "legendFormat": "CPU"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "netdata_smartctl_device_temperature_Celsius_average{instance=\"leon\"}",
+                        "instant": true,
+                        "legendFormat": "Disco SSD"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "bargauge",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "displayMode": "gradient",
+                "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": false},
+                "maxVizHeight": 300, "minVizHeight": 16, "minVizWidth": 8,
+                "namePlacement": "auto", "orientation": "horizontal",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showUnfilled": true, "sizing": "auto", "text": {}, "valueMode": "color"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "celsius", "min": 0, "max": 100,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": 0, "color": "green"},
+                      {"value": 70, "color": "yellow"},
+                      {"value": 85, "color": "red"}
+                    ]
+                  },
+                  "color": {"mode": "thresholds"}
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-47": {
+        "kind": "Panel",
+        "spec": {
+          "id": 47,
+          "title": "Claire — Temperatura",
+          "description": "Claire: CPU package (coretemp) + disco NVMe (Composite).",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "netdata_system_hw_sensor_temperature_input_degrees_Celsius_average{instance=\"claire\", chart=~\".*coretemp.*Package.*\"}",
+                        "instant": true,
+                        "legendFormat": "CPU"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "netdata_system_hw_sensor_temperature_input_degrees_Celsius_average{instance=\"claire\", chart=~\".*nvme.*Composite.*\"}",
+                        "instant": true,
+                        "legendFormat": "Disco NVMe"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "bargauge",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "displayMode": "gradient",
+                "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": false},
+                "maxVizHeight": 300, "minVizHeight": 16, "minVizWidth": 8,
+                "namePlacement": "auto", "orientation": "horizontal",
+                "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+                "showUnfilled": true, "sizing": "auto", "text": {}, "valueMode": "color"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "celsius", "min": 0, "max": 100,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {"value": 0, "color": "green"},
+                      {"value": 70, "color": "yellow"},
+                      {"value": 85, "color": "red"}
+                    ]
+                  },
+                  "color": {"mode": "thresholds"}
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-45": {
+        "kind": "Panel",
+        "spec": {
+          "id": 45,
+          "title": "CPU Usage — Leon & Claire",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "100 - netdata_system_cpu_percentage_average{dimension=\"idle\", instance=~\"leon|claire\"}",
+                        "legendFormat": "{{instance}}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "annotations": {"clustering": -1, "multiLane": false},
+                "legend": {"calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+                "tooltip": {"hideZeros": false, "mode": "multi", "sort": "desc"}
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent", "min": 0, "max": 100,
+                  "thresholds": {"mode": "absolute", "steps": [{"value": 0, "color": "green"}]},
+                  "color": {"mode": "palette-classic"},
+                  "custom": {
+                    "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text",
+                    "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6,
+                    "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none",
+                    "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+                    "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+                    "scaleDistribution": {"type": "linear"}, "showPoints": "never", "showValues": false,
+                    "spanNulls": false, "stacking": {"group": "A", "mode": "none"},
+                    "thresholdsStyle": {"mode": "off"}
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-46": {
+        "kind": "Panel",
+        "spec": {
+          "id": 46,
+          "title": "RAM Usage — Leon & Claire",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {"name": "PBFA97CFB590B2093"},
+                      "spec": {
+                        "expr": "sum by(instance) (netdata_system_ram_MiB_average{dimension=\"used\", instance=~\"leon|claire\"})",
+                        "legendFormat": "{{instance}}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.0.2",
+            "spec": {
+              "options": {
+                "annotations": {"clustering": -1, "multiLane": false},
+                "legend": {"calcs": ["mean", "max", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+                "tooltip": {"hideZeros": false, "mode": "multi", "sort": "desc"}
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "decmbytes", "min": 0,
+                  "thresholds": {"mode": "absolute", "steps": [{"value": 0, "color": "green"}]},
+                  "color": {"mode": "palette-classic"},
+                  "custom": {
+                    "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text",
+                    "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6,
+                    "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none",
+                    "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+                    "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+                    "scaleDistribution": {"type": "linear"}, "showPoints": "never", "showValues": false,
+                    "spanNulls": false, "stacking": {"group": "A", "mode": "none"},
+                    "thresholdsStyle": {"mode": "off"}
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "RowsLayout",
+      "spec": {
+        "rows": [
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "System Overview",
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {"kind": "GridLayoutItem", "spec": {"x": 0, "y": 0, "width": 6, "height": 4, "element": {"kind": "ElementReference", "name": "panel-2"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 6, "y": 0, "width": 6, "height": 4, "element": {"kind": "ElementReference", "name": "panel-3"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 12, "y": 0, "width": 6, "height": 4, "element": {"kind": "ElementReference", "name": "panel-4"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 18, "y": 0, "width": 6, "height": 4, "element": {"kind": "ElementReference", "name": "panel-5"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 0, "y": 4, "width": 12, "height": 8, "element": {"kind": "ElementReference", "name": "panel-6"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 12, "y": 4, "width": 12, "height": 8, "element": {"kind": "ElementReference", "name": "panel-7"}}}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Storage",
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {"kind": "GridLayoutItem", "spec": {"x": 0, "y": 0, "width": 12, "height": 8, "element": {"kind": "ElementReference", "name": "panel-11"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 12, "y": 0, "width": 12, "height": 8, "element": {"kind": "ElementReference", "name": "panel-12"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 0, "y": 8, "width": 12, "height": 8, "element": {"kind": "ElementReference", "name": "panel-14"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 12, "y": 8, "width": 12, "height": 8, "element": {"kind": "ElementReference", "name": "panel-16"}}}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Network",
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {"kind": "GridLayoutItem", "spec": {"x": 0, "y": 0, "width": 24, "height": 8, "element": {"kind": "ElementReference", "name": "panel-21"}}}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Docker Containers",
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {"kind": "GridLayoutItem", "spec": {"x": 0, "y": 0, "width": 12, "height": 10, "element": {"kind": "ElementReference", "name": "panel-31"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 12, "y": 0, "width": 12, "height": 10, "element": {"kind": "ElementReference", "name": "panel-32"}}}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Proxmox Nodes",
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {"kind": "GridLayoutItem", "spec": {"x": 0, "y": 0, "width": 6, "height": 4, "element": {"kind": "ElementReference", "name": "panel-40"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 6, "y": 0, "width": 6, "height": 4, "element": {"kind": "ElementReference", "name": "panel-41"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 12, "y": 0, "width": 6, "height": 4, "element": {"kind": "ElementReference", "name": "panel-42"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 18, "y": 0, "width": 6, "height": 4, "element": {"kind": "ElementReference", "name": "panel-43"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 0, "y": 4, "width": 12, "height": 8, "element": {"kind": "ElementReference", "name": "panel-45"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 12, "y": 4, "width": 12, "height": 8, "element": {"kind": "ElementReference", "name": "panel-46"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 0, "y": 12, "width": 12, "height": 8, "element": {"kind": "ElementReference", "name": "panel-44"}}},
+                    {"kind": "GridLayoutItem", "spec": {"x": 12, "y": 12, "width": 12, "height": 8, "element": {"kind": "ElementReference", "name": "panel-47"}}}
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": ["homelab", "netdata"],
+    "timeSettings": {
+      "timezone": "browser",
+      "from": "now-1h",
+      "to": "now",
+      "autoRefresh": "30s",
+      "autoRefreshIntervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "Homelab Overview",
+    "variables": []
+  }
+}

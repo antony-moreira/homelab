@@ -6,7 +6,7 @@ scrape_configs:
   - job_name: 'netdata'
     metrics_path: '/api/v1/allmetrics'
     params:
-      format: ['prometheus']
+      format: ['prometheus_all_hosts']
     honor_labels: true
     static_configs:
       - targets: ['netdata:19999']
