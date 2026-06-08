@@ -31,6 +31,7 @@ Documentação completa da infraestrutura, stacks Docker e procedimentos do home
 - [Containers LXC](#containers-lxc)
 - [MCP SSH Server](#mcp-ssh-server)
 - [Scripts de Manutenção](#scripts-de-manutenção)
+- [Proxmox Leon — Configurações Específicas](#proxmox-leon--configurações-específicas)
 - [Acesso Externo](#acesso-externo)
 
 ---
@@ -297,6 +298,29 @@ Todos os apps abaixo rodam no servidor principal via Docker Compose, gerenciados
 5. Overseerr → setup inicial → conectar ao Plex + Radarr + Sonarr
 6. Obter API keys de cada app em Settings → General
 
+**Notificações Telegram (download completo):**
+
+Scripts customizados em `/config/notify-telegram.sh` dentro de cada container (host: `apps/radarr/notify-telegram.sh` e `apps/sonarr/notify-telegram.sh`).
+
+Configurado via Custom Script notification (Settings → Connect → Custom Script):
+- **Path:** `/config/notify-telegram.sh`
+- **Triggers:** On Download, On Upgrade
+
+Formato das mensagens:
+```
+# Radarr
+🎬 Filme disponível: Título (Ano)
+📁 Qualidade: 1080p
+
+# Sonarr
+📺 Série disponível: Nome da Série
+🗂 Temporada X - Episódio Y
+🎞 Título do Episódio
+📁 Qualidade: 1080p
+```
+
+> Para alterar o formato: editar `apps/radarr/notify-telegram.sh` e `apps/sonarr/notify-telegram.sh` no servidor. Variáveis disponíveis: `$radarr_movie_title`, `$radarr_movie_year`, `$radarr_moviefile_quality` (Radarr) / `$sonarr_series_title`, `$sonarr_episodefile_seasonnumber`, `$sonarr_episodefile_episodenumbers`, `$sonarr_episodefile_episodetitles`, `$sonarr_episodefile_quality` (Sonarr).
+
 ---
 
 ### Jellyfin
@@ -501,8 +525,27 @@ Mantém acesso Tailscale ao node Claire independente do servidor principal.
 - **Startup:** `order=1, onboot=1`
 - **URL:** `upsnap.home.seudominio.com`
 - **Serviço:** `upsnap.service` (systemd)
+- **Login:** conta PocketBase (email do administrador)
 
 Interface web para ligar dispositivos via Wake on LAN.
+
+#### Devices configurados
+
+| Device | IP | MAC |
+|---|---|---|
+| Leon (Proxmox) | `PROXMOX_LEON_IP` | `<MAC_LEON>` |
+
+#### Integração com Alexa (Remote Relay)
+
+WoL via Alexa funciona via **Remote Relay** (LXC no Claire — serviço sempre on). Remote Relay envia magic packet pra todos os MACs cadastrados no device com um único comando.
+
+Device "Homelab" no Remote Relay tem dois MACs:
+- `<MAC_HOMELAB>` — servidor Docker principal
+- `<MAC_LEON>` — Proxmox Leon
+
+Comando: *"Alexa, liga o Homelab"* → acorda ambos simultaneamente.
+
+> SimpleWOL não funciona para Linux — requer agente local não compatível. Remote Relay é a solução correta.
 
 #### Requisito: habilitar WoL no dispositivo alvo
 
@@ -519,7 +562,7 @@ ethtool -s <interface> wol g
 Para persistir após reboot, criar serviço systemd:
 
 ```ini
-# /etc/systemd/system/wol.service
+# /etc/systemd/system/wol-<hostname>.service
 [Unit]
 Description=Enable Wake-on-LAN
 After=network.target
@@ -534,8 +577,10 @@ WantedBy=multi-user.target
 ```
 
 ```bash
-systemctl daemon-reload && systemctl enable wol && systemctl start wol
+systemctl daemon-reload && systemctl enable wol-<hostname> && systemctl start wol-<hostname>
 ```
+
+> No Leon: serviço `/etc/systemd/system/wol-leon.service`, interface `enp1s0`. WoL verificado e funcionando.
 
 #### Criar LXC UPSnap do zero (sem community scripts)
 
@@ -680,6 +725,44 @@ Remove imagens Docker antigas (não-latest, não em uso). Preserva imagens com t
 
 ```bash
 bash apps/scripts/docker-cleanup.sh
+```
+
+---
+
+## Proxmox Leon — Configurações Específicas
+
+### USB Disk Passthrough Resiliente (VM 110)
+
+VM 110 (`homelab`) tem o HD externo Seagate BUP Slim (`scsi1`) em passthrough. Como é USB, pode desconectar — sem tratamento, a VM falha ao iniciar.
+
+**Solução implementada:** script + systemd service + udev rules que gerenciam `scsi1` automaticamente.
+
+| Arquivo | Localização no Leon |
+|---|---|
+| Script | `/usr/local/bin/check-usb-disk-vm110.sh` |
+| Systemd service | `/etc/systemd/system/check-usb-disk-vm110.service` |
+| udev rules | `/etc/udev/rules.d/99-seagate-vm110.rules` |
+
+**Comportamento:**
+
+| Cenário | O que acontece |
+|---|---|
+| Boot com disco ausente | systemd service remove `scsi1` da config → VM inicia normalmente |
+| Boot com disco presente | systemd service garante `scsi1` na config |
+| Disco desconecta em runtime | udev REMOVE → `scsi1` removido da config |
+| Disco reconecta em runtime | udev ADD → `scsi1` reanexado na config |
+| Disco ausente com VM já rodando | VM continua mas perde I/O do disco — requer restart manual |
+
+> `qm set --delete scsi1` apenas remove a referência na config — **não apaga dados do disco**.
+
+**Verificar logs:**
+```bash
+journalctl -t check-usb-disk
+```
+
+**Rodar manualmente:**
+```bash
+bash /usr/local/bin/check-usb-disk-vm110.sh
 ```
 
 ---
