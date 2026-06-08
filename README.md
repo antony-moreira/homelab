@@ -300,11 +300,13 @@ Todos os apps abaixo rodam no servidor principal via Docker Compose, gerenciados
 
 **Notificações Telegram (download completo):**
 
-Scripts customizados em `/config/notify-telegram.sh` dentro de cada container (host: `apps/radarr/notify-telegram.sh` e `apps/sonarr/notify-telegram.sh`).
+Scripts customizados em `/config/notify-telegram.sh` dentro de cada container. No repo (placeholders): `apps/radarr/notify-telegram.sh` e `apps/sonarr/notify-telegram.sh`. No servidor (valores reais): `/home/<user>/apps/radarr/notify-telegram.sh` e `/home/<user>/apps/sonarr/notify-telegram.sh`.
 
 Configurado via Custom Script notification (Settings → Connect → Custom Script):
 - **Path:** `/config/notify-telegram.sh`
 - **Triggers:** On Download, On Upgrade
+
+> **Token Telegram:** scripts no repo usam placeholders (`SEU_BOT_TOKEN`/`SEU_CHAT_ID`). No servidor, substituir pelos valores reais (mesmo padrão de `.env`/`.env.example`). Não commitar o token.
 
 Formato das mensagens:
 ```
@@ -319,7 +321,15 @@ Formato das mensagens:
 📁 Qualidade: 1080p
 ```
 
-> Para alterar o formato: editar `apps/radarr/notify-telegram.sh` e `apps/sonarr/notify-telegram.sh` no servidor. Variáveis disponíveis: `$radarr_movie_title`, `$radarr_movie_year`, `$radarr_moviefile_quality` (Radarr) / `$sonarr_series_title`, `$sonarr_episodefile_seasonnumber`, `$sonarr_episodefile_episodenumbers`, `$sonarr_episodefile_episodetitles`, `$sonarr_episodefile_quality` (Sonarr).
+> **⚠️ Cuidado ao editar via SSH/heredoc:** usar delimitador com aspas (`<< 'EOF'`) para o heredoc **não expandir** as variáveis `$radarr_*`/`$sonarr_*` na hora de gravar o arquivo. Com `<< EOF` (sem aspas), as variáveis são expandidas como vazio no momento da criação → notificação chega sem título/qualidade. Validar sempre com `cat` após gravar.
+
+> Variáveis disponíveis: `$radarr_movie_title`, `$radarr_movie_year`, `$radarr_moviefile_quality` (Radarr) / `$sonarr_series_title`, `$sonarr_episodefile_seasonnumber`, `$sonarr_episodefile_episodenumbers`, `$sonarr_episodefile_episodetitles`, `$sonarr_episodefile_quality` (Sonarr).
+
+**Testar o script manualmente** (passando variáveis simuladas):
+```bash
+radarr_movie_title='Michael' radarr_movie_year='2026' radarr_moviefile_quality='WEBDL-2160p' \
+  bash /home/<user>/apps/radarr/notify-telegram.sh
+```
 
 ---
 
