@@ -848,6 +848,28 @@ journalctl -t check-usb-disk
 bash /usr/local/bin/check-usb-disk-vm110.sh
 ```
 
+### CPU Governor (controle térmico)
+
+Leon (Beelink Mini S, Intel N5095) roda quente. Default do Proxmox usa governor `performance` → CPU trava em ~2.8GHz mesmo ocioso, gerando calor à toa.
+
+**Solução:** governor `powersave` (driver `intel_pstate`) → escala dinâmico: idle desce a 800MHz, sob carga sobe até 2.9GHz (burst preservado). Ganho medido: **-5°C** (86°C → 81°C).
+
+| Arquivo | Localização no Leon |
+|---|---|
+| Systemd service | `/etc/systemd/system/cpu-governor.service` |
+
+```bash
+# Verificar governor atual
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+
+# Aplicar runtime (reversível)
+echo powersave | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+```
+
+> `powersave` no `intel_pstate` **não** trava na freq mínima — é dinâmico (≠ governor antigo do acpi-cpufreq). Burst sob carga mantido.
+
+> **⚠️ Causa raiz térmica:** 81°C com ~30% de uso = cooling deficiente, não carga. Pasta térmica de fábrica degradada (problema conhecido do N5095 em uso 24/7). Governor é paliativo; **repaste pendente** (esperado -10 a -20°C adicional). Ver seção [Temperatura](#temperatura) nas notas do node.
+
 ---
 
 ## Acesso Externo
