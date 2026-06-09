@@ -2,6 +2,11 @@ services:
   adguardhome-sync:
     image: ghcr.io/bakito/adguardhome-sync:latest
     container_name: adguardhome-sync
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128m
     restart: unless-stopped
     volumes:
       - /home/antony/apps/adguardhome-sync/adguardhome-sync.yaml:/config/adguardhome-sync.yaml:ro

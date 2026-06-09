@@ -2,6 +2,11 @@ services:
   watchtower:
     image: containrrr/watchtower:latest
     container_name: watchtower
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128m
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

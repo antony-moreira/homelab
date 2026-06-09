@@ -2,6 +2,11 @@ services:
   dockhand:
     image: fnsys/dockhand:latest
     container_name: dockhand
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512m
     restart: unless-stopped
     networks:
       - traefik

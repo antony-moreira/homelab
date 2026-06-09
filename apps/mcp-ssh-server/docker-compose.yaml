@@ -2,6 +2,11 @@ services:
   mcp-ssh-server:
     image: mcp-ssh-server:latest
     container_name: mcp-ssh-server
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256m
     restart: unless-stopped
     networks:
       - traefik

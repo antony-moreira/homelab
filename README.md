@@ -410,6 +410,31 @@ Netdata (container no homelab) é o **parent** que agrega métricas. Prometheus 
 - Grafana login padrão: `admin/admin` (trocar no primeiro acesso)
 - Netdata também conecta ao Netdata Cloud (painel em `app.netdata.cloud`)
 
+#### ⚡ Tuning do Netdata (controle de CPU/calor)
+
+**Problema:** Netdata default coleta cgroups (métricas de todos os containers) a cada 1s. Em CPU fraco (N5095), isso faz `dockerd`+`containerd` subirem a **~156% combinados**, gerando calor (Leon chegou a 88°C). Diagnóstico: parar o container netdata derrubou dockerd de 156% → 2% instantâneo.
+
+**Solução:** reduzir frequência de coleta — config em `apps/monitoring-stack/netdata-tuning.conf`. Ganho medido: `dockerd` 67%→1%, **-8°C**.
+
+```bash
+# netdata.conf vive no volume Docker monitoring-stack_netdataconfig (Dockhand NÃO sincroniza)
+docker exec netdata bash -c 'cat >> /etc/netdata/netdata.conf << EOF
+
+[global]
+    update every = 5
+
+[plugin:cgroups]
+    update every = 30
+    enable new cgroups detected at runtime = yes
+
+[plugin:proc:/proc/diskstats]
+    update every = 10
+EOF'
+docker restart netdata
+```
+
+> Verificar: `docker exec netdata grep -A1 'plugin:cgroups' /etc/netdata/netdata.conf`
+
 #### Monitoramento dos nodes Proxmox (Leon + Claire)
 
 Leon e Claire rodam **Netdata bare metal** (não LXC — sensores de hardware precisam de acesso direto). Cada um faz streaming das métricas para o parent (homelab).
@@ -868,7 +893,18 @@ echo powersave | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 
 > `powersave` no `intel_pstate` **não** trava na freq mínima — é dinâmico (≠ governor antigo do acpi-cpufreq). Burst sob carga mantido.
 
-> **⚠️ Causa raiz térmica:** 81°C com ~30% de uso = cooling deficiente, não carga. Pasta térmica de fábrica degradada (problema conhecido do N5095 em uso 24/7). Governor é paliativo; **repaste pendente** (esperado -10 a -20°C adicional). Ver seção [Temperatura](#temperatura) nas notas do node.
+#### Resumo das otimizações térmicas (Leon)
+
+Pico inicial: **88°C**. Mitigações aplicadas (cumulativas):
+
+| Otimização | Ganho | Onde |
+|---|---|---|
+| CPU governor `performance` → `powersave` | -5°C | `/etc/systemd/system/cpu-governor.service` |
+| Netdata tuning (cgroups 1s → 30s) | -8°C | `apps/monitoring-stack/netdata-tuning.conf` |
+| **Total via software** | **~-9°C** | 88°C → **79°C** |
+| Repaste (pendente) | -10 a -20°C esperado | pasta térmica MX-4/NT-H1 |
+
+> **⚠️ Causa raiz térmica:** mesmo a 79°C, o teto é o cooling físico. Pasta de fábrica degradada (problema conhecido do N5095 em uso 24/7). Software já no limite; **repaste é a solução definitiva** (esperado ~60°C). Ganhos de software não somam linear — 88→79°C é o efeito combinado real medido.
 
 ---
 

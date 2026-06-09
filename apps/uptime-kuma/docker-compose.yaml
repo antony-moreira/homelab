@@ -4,6 +4,11 @@ services:
   uptime-kuma:
     image: louislam/uptime-kuma
     container_name: uptime-kuma
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 384m
     networks:
       - traefik
     volumes:

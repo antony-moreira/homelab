@@ -14,6 +14,11 @@ services:
   netdata:
     image: netdata/netdata
     container_name: netdata
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1g
     hostname: homelab
     pid: host
     restart: unless-stopped
@@ -51,6 +56,11 @@ services:
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128m
     restart: unless-stopped
     pid: host
     network_mode: host
@@ -71,6 +81,11 @@ services:
     image: prom/prometheus:latest
     user: "1000"
     container_name: prometheus
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 768m
     restart: unless-stopped
     volumes:
       - /home/antony/apps/monitoring-stack/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -101,6 +116,11 @@ services:
     image: grafana/grafana:latest
     user: "1000"
     container_name: grafana
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1g
     restart: unless-stopped
     ports:
       - 3003:3000

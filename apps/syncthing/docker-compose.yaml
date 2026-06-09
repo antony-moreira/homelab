@@ -3,6 +3,11 @@ services:
   syncthing:
     image: lscr.io/linuxserver/syncthing:latest
     container_name: syncthing
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512m
     hostname: syncthing
     networks:
       - traefik

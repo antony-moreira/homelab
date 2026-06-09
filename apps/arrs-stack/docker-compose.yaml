@@ -3,6 +3,11 @@
 services:
   homarr:
     container_name: homarr
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512m
     image: ghcr.io/ajnart/homarr:latest
     restart: unless-stopped
     networks:
@@ -26,6 +31,11 @@ services:
   overseerr:
     image: lscr.io/linuxserver/overseerr:latest
     container_name: overseerr
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512m
     networks:
       - traefik
     environment:
@@ -54,6 +64,11 @@ services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 768m
     networks:
       - traefik
     environment:
@@ -76,6 +91,11 @@ services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1g
     networks:
       - traefik
     environment:
@@ -99,6 +119,11 @@ services:
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 512m
     networks:
       - traefik
     environment:
@@ -122,6 +147,11 @@ services:
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 512m
     networks:
       - traefik
     environment:
@@ -145,6 +175,11 @@ services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2560m
     networks:
       - traefik
     environment:

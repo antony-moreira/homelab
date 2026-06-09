@@ -2,6 +2,11 @@ services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 384m
     networks:
       - traefik
     ports:
@@ -56,6 +61,11 @@ services:
   dashdot:
     image: mauricenino/dashdot:latest
     container_name: dashdot
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256m
     privileged: true
     networks:
       - traefik

@@ -2,6 +2,11 @@ services:
   filebrowser:
     image: filebrowser/filebrowser:v2.63.5
     container_name: filebrowser
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128m
     user: "1000:1000"
     networks:
       - traefik

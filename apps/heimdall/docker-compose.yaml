@@ -3,6 +3,11 @@ services:
   heimdall:
     image: lscr.io/linuxserver/heimdall:latest
     container_name: heimdall
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256m
     networks:
       - traefik
     environment:

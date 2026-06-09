@@ -2,6 +2,11 @@ services:
   nextcloud:
     image: nextcloud:latest
     container_name: nextcloud
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 768m
     restart: unless-stopped
     networks:
       - traefik
@@ -44,6 +49,11 @@ services:
   nextcloud-db:
     image: mariadb:lts
     container_name: nextcloud-db
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512m
     restart: unless-stopped
     networks:
       - traefik

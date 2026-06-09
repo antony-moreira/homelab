@@ -2,6 +2,11 @@ services:
   tailscale:
     image: tailscale/tailscale:latest
     container_name: tailscale
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256m
     restart: unless-stopped
     network_mode: host
     cap_add:

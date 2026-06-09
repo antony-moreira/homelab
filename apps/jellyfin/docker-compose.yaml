@@ -2,6 +2,11 @@ services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 2g
     networks:
       - traefik
     ports:

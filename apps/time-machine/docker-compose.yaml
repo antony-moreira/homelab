@@ -25,4 +25,9 @@ services:
         soft: 65536
         hard: 65536
     container_name: timemachine
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512m
     image: mbentley/timemachine:smb
