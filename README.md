@@ -31,7 +31,8 @@ Documentação completa da infraestrutura, stacks Docker e procedimentos do home
 - [Containers LXC](#containers-lxc)
 - [MCP SSH Server](#mcp-ssh-server)
 - [Scripts de Manutenção](#scripts-de-manutenção)
-- [Proxmox Leon — Configurações Específicas](#proxmox-leon--configurações-específicas)
+- [Resource Limits](#resource-limits)
+- [Otimizações Opcionais do Node Proxmox](#otimizações-opcionais-do-node-proxmox)
 - [Acesso Externo](#acesso-externo)
 
 ---
@@ -51,10 +52,10 @@ Cloudflare DNS + Tunnel
     │
 Servidor Principal
     │
-    ├── Proxmox Leon
-    │       └── VMs e guests
+    ├── Node Proxmox primário
+    │       └── VMs e guests (ex: VM do servidor Docker)
     │
-    └── Proxmox Claire (sempre ligado)
+    └── Node Proxmox secundário (ideal: sempre ligado)
             └── LXC AdGuard Secondary
             └── LXC Tailscale
             └── LXC UPSnap (Wake on LAN)
@@ -66,12 +67,12 @@ Servidor Principal
 
 | Dispositivo | Variável | Função |
 |---|---|---|
-| Servidor principal | `SERVER_IP` | Roda todos os containers Docker |
-| Proxmox Leon | `PROXMOX_LEON_IP` | Hypervisor principal |
-| Proxmox Claire | `PROXMOX_CLAIRE_IP` | Hypervisor secundário / sempre ligado |
+| Servidor principal | `SERVER_IP` | Roda todos os containers Docker (pode ser VM num node Proxmox) |
+| Node Proxmox primário | `PROXMOX_NODE1_IP` | Hypervisor principal |
+| Node Proxmox secundário | `PROXMOX_NODE2_IP` | Hypervisor secundário (ideal: sempre ligado, para WoL) |
 | AdGuard Primary | `ADGUARD_IP` | DNS primário da rede |
-| AdGuard Secondary | `ADGUARD_SECONDARY_IP` | DNS secundário (LXC no Claire) |
-| UPSnap | `UPSNAP_IP` | Wake on LAN (LXC no Claire) |
+| AdGuard Secondary | `ADGUARD_SECONDARY_IP` | DNS secundário |
+| UPSnap | `UPSNAP_IP` | Wake on LAN |
 
 Todos os IPs são definidos nos arquivos `.env` de cada stack (ver `.env.example`).
 
@@ -201,8 +202,8 @@ docker compose --env-file .env.dockhand up -d --force-recreate
 
 | Serviço | Domínio (var) | Backend |
 |---|---|---|
-| Proxmox Leon | `PROXMOX_LEON_HOME_DOMAIN` | `https://<PROXMOX_LEON_IP>:8006` |
-| Proxmox Claire | `PROXMOX_CLAIRE_HOME_DOMAIN` | `https://<PROXMOX_CLAIRE_IP>:8006` |
+| Node Proxmox primário | `PROXMOX_NODE1_HOME_DOMAIN` | `https://<PROXMOX_NODE1_IP>:8006` |
+| Node Proxmox secundário | `PROXMOX_NODE2_HOME_DOMAIN` | `https://<PROXMOX_NODE2_IP>:8006` |
 | AdGuard Primary | `ADGUARD_HOME_DOMAIN` | `http://<ADGUARD_IP>:<ADGUARD_PORT>` |
 | AdGuard Secondary | `ADGUARD_SECONDARY_HOME_DOMAIN` | `http://<ADGUARD_SECONDARY_IP>:<ADGUARD_PORT>` |
 | Plex | `PLEX_HOME_DOMAIN` | `http://<SERVER_IP>:32400` |
@@ -317,6 +318,16 @@ Estrutura interna (`/data` no container = `MEDIA_CENTER` no host):
 
 > **Migração de mounts separados → `/data`** (remap sem mover arquivos): usar Radarr `movie/editor` e Sonarr `series/editor` API com `moveFiles:false` (só atualiza paths no DB, arquivos ficam no lugar). Atualizar também Radarr **collections** (`rootFolderPath`) e qBittorrent torrents ativos via `setLocation` + recheck.
 
+**Config runtime do qBittorrent** (em `qBittorrent.conf`, no volume `/config` — **não** versionado; editar com o container parado, pois o qBit reescreve no shutdown):
+```ini
+Session\DefaultSavePath=/data/Downloads
+Session\TempPath=/data/Downloads/incomplete
+WebUI\LocalHostAuth=false                  # permite API via localhost no container
+WebUI\AuthSubnetWhitelistEnabled=true      # clients da subnet Docker pulam auth
+WebUI\AuthSubnetWhitelist=<docker-subnet>  # ex: 172.16.0.0/12
+```
+> A whitelist da subnet resolve o erro "Invalid cookie" de clients que integram com o qBit (ex: dashboard homarr com versões novas do qBit).
+
 **Configuração pós-deploy:**
 1. Acessar Prowlarr → adicionar indexers
 2. Radarr/Sonarr → Settings → Download Clients → adicionar qBittorrent
@@ -410,11 +421,9 @@ Netdata (container no homelab) é o **parent** que agrega métricas. Prometheus 
 - Grafana login padrão: `admin/admin` (trocar no primeiro acesso)
 - Netdata também conecta ao Netdata Cloud (painel em `app.netdata.cloud`)
 
-#### ⚡ Tuning do Netdata (controle de CPU/calor)
+#### Tuning do Netdata (reduz CPU)
 
-**Problema:** Netdata default coleta cgroups (métricas de todos os containers) a cada 1s. Em CPU fraco (N5095), isso faz `dockerd`+`containerd` subirem a **~156% combinados**, gerando calor (Leon chegou a 88°C). Diagnóstico: parar o container netdata derrubou dockerd de 156% → 2% instantâneo.
-
-**Solução:** reduzir frequência de coleta — config em `apps/monitoring-stack/netdata-tuning.conf`. Ganho medido: `dockerd` 67%→1%, **-8°C**.
+Por padrão o Netdata coleta métricas de cgroups (todos os containers) a cada 1s. Em hardware modesto isso eleva o CPU de `dockerd`+`containerd` de forma significativa. Reduzir a frequência de coleta resolve — config de referência em `apps/monitoring-stack/netdata-tuning.conf`.
 
 ```bash
 # netdata.conf vive no volume Docker monitoring-stack_netdataconfig (Dockhand NÃO sincroniza)
@@ -435,33 +444,32 @@ docker restart netdata
 
 > Verificar: `docker exec netdata grep -A1 'plugin:cgroups' /etc/netdata/netdata.conf`
 
-#### Monitoramento dos nodes Proxmox (Leon + Claire)
+#### Monitorar nodes Proxmox (streaming child → parent)
 
-Leon e Claire rodam **Netdata bare metal** (não LXC — sensores de hardware precisam de acesso direto). Cada um faz streaming das métricas para o parent (homelab).
+Para incluir os nodes Proxmox (CPU, RAM, temperatura) no mesmo Grafana, rodar **Netdata bare metal** em cada node (não LXC — sensores de hardware precisam de acesso direto) com streaming para o parent (container Netdata do homelab).
 
-**Instalação em cada node:**
+**Instalar em cada node:**
 ```bash
-curl -Ss -L https://my-netdata.io/kickstart.sh > /tmp/netdata-install.sh
+curl -Ss -L https://my-netdata.io/kickstart.sh -o /tmp/netdata-install.sh
 bash /tmp/netdata-install.sh --non-interactive --stable-channel
 ```
 
-**Streaming child → parent** — em cada node, `/etc/netdata/stream.conf`:
+**Child → parent** — em cada node, `/etc/netdata/stream.conf`:
 ```ini
 [stream]
     enabled = yes
     destination = <homelab-ip>:19999
-    api key = <STREAM_API_KEY>
+    api key = <STREAM_API_KEY>   # gerar com uuidgen (uma key por node)
 ```
 
-**Parent aceita streaming** — dentro do container netdata, `/etc/netdata/stream.conf`:
+**Parent aceita streaming** — no container netdata, `/etc/netdata/stream.conf`:
 ```ini
 [<STREAM_API_KEY>]
     enabled = yes
-    allow from = 192.168.3.*
+    allow from = <subnet-local>
 ```
-> Gerar `STREAM_API_KEY` via `uuidgen`. Uma key por node (mais controle).
 
-**Prometheus scrape** — usa format `prometheus_all_hosts` para expor todos os hosts com label `instance`:
+**Prometheus scrape** — format `prometheus_all_hosts` expõe todos os hosts com label `instance`:
 ```yaml
 - job_name: 'netdata'
   metrics_path: '/api/v1/allmetrics'
@@ -472,13 +480,11 @@ bash /tmp/netdata-install.sh --non-interactive --stable-channel
     - targets: ['netdata:19999']
 ```
 
-**Queries Grafana:**
-- Métricas do homelab: filtrar `instance!~"leon|claire"` (senão soma os 3 nodes → valores errados)
-- Métricas dos nodes: filtrar `instance=~"leon|claire"`
-- Temperatura: `netdata_system_hw_sensor_temperature_input_degrees_Celsius_average{chart=~".*coretemp.*Package.*"}`
+**Queries Grafana** (com múltiplos hosts no mesmo job):
+- Filtrar host principal: `instance!~"<node1>|<node2>"` (senão soma todos os hosts → valores errados)
+- Filtrar nodes: `instance=~"<node1>|<node2>"`
+- Temperatura CPU: `netdata_system_hw_sensor_temperature_input_degrees_Celsius_average{chart=~".*coretemp.*Package.*"}`
 - Temp disco: `netdata_smartctl_device_temperature_Celsius_average` (SSD/HD) ou `chart=~".*nvme.*Composite.*"` (NVMe)
-
-> Dashboard tem row "Proxmox Nodes" com CPU/RAM por node + bargauge de temperatura (CPU + disco) lado a lado.
 
 ---
 
@@ -598,16 +604,7 @@ Anuncia a sub-rede local para a mesh Tailscale.
 
 **Stack:** `apps/watchtower/`
 
-Atualiza automaticamente imagens Docker toda quarta-feira às 3h. Remove imagens antigas automaticamente.
-
----
-
-### Netdata
-
-**Stack:** `apps/netdata/`  
-**Modo:** `network_mode: host`
-
-Monitoramento em tempo real. Interface em `http://<server-ip>:19999`.
+Atualiza automaticamente imagens Docker (agenda configurável). Com `WATCHTOWER_CLEANUP=true`, remove a imagem antiga após atualizar — mas não limpa imagens órfãs gerais (ver `docker-cleanup.sh`).
 
 ---
 
@@ -625,7 +622,7 @@ DNS secundário. Sincronizado automaticamente pelo AdGuard Home Sync.
 
 ### Tailscale (node secundário)
 
-Mantém acesso Tailscale ao node Claire independente do servidor principal.
+Mantém acesso Tailscale ao node secundário independente do servidor principal — útil para administrar/ligar o resto da infra remotamente mesmo com o servidor principal desligado.
 
 ### UPSnap (Wake on LAN)
 
@@ -637,23 +634,15 @@ Mantém acesso Tailscale ao node Claire independente do servidor principal.
 
 Interface web para ligar dispositivos via Wake on LAN.
 
-#### Devices configurados
-
-| Device | IP | MAC |
-|---|---|---|
-| Leon (Proxmox) | `PROXMOX_LEON_IP` | `<MAC_LEON>` |
+Cadastrar cada device (nome, IP, MAC) na UI do UPSnap. O MAC se obtém com `ip link show <interface>` no host alvo.
 
 #### Integração com Alexa (Remote Relay)
 
-WoL via Alexa funciona via **Remote Relay** (LXC no Claire — serviço sempre on). Remote Relay envia magic packet pra todos os MACs cadastrados no device com um único comando.
+WoL por voz funciona via **Remote Relay** (rodar o agente num host sempre ligado, ex: node Proxmox secundário). Cadastra os MACs no device do Remote Relay; um único comando acorda todos os MACs daquele device.
 
-Device "Homelab" no Remote Relay tem dois MACs:
-- `<MAC_HOMELAB>` — servidor Docker principal
-- `<MAC_LEON>` — Proxmox Leon
+> Um device com vários MACs → *"Alexa, liga o Homelab"* acorda todas as máquinas de uma vez.
 
-Comando: *"Alexa, liga o Homelab"* → acorda ambos simultaneamente.
-
-> SimpleWOL não funciona para Linux — requer agente local não compatível. Remote Relay é a solução correta.
+> SimpleWOL (skill alternativa) **não** funciona para Linux — depende do Echo enviar o pacote na rede local, sem agente compatível. Remote Relay é a opção para hosts Linux.
 
 #### Requisito: habilitar WoL no dispositivo alvo
 
@@ -688,7 +677,7 @@ WantedBy=multi-user.target
 systemctl daemon-reload && systemctl enable wol-<hostname> && systemctl start wol-<hostname>
 ```
 
-> No Leon: serviço `/etc/systemd/system/wol-leon.service`, interface `enp1s0`. WoL verificado e funcionando.
+> Ajustar `<interface>` (ver com `ip link`) e `<hostname>` ao node alvo. BIOS geralmente já vem com WoL/PME habilitado — só falta habilitar no SO via `ethtool`.
 
 #### Criar LXC UPSnap do zero (sem community scripts)
 
@@ -772,8 +761,8 @@ Configurados via variáveis de ambiente:
 | Variável | Host alvo | Usuário |
 |---|---|---|
 | `SSH_HOST_HOMELAB` + `SSH_USER` | Servidor principal | usuário local |
-| `PROXMOX_LEON_IP` | Node Leon | `root` |
-| `PROXMOX_CLAIRE_IP` | Node Claire | `root` |
+| `PROXMOX_NODE1_IP` | Node Proxmox primário | `root` |
+| `PROXMOX_NODE2_IP` | Node Proxmox secundário | `root` |
 
 SSH key montada em `/root/.ssh` dentro do container (volume `~/.ssh:/root/.ssh:ro`).
 
@@ -837,51 +826,56 @@ bash apps/scripts/docker-cleanup.sh
 
 ---
 
-## Proxmox Leon — Configurações Específicas
+## Resource Limits
 
-### USB Disk Passthrough Resiliente (VM 110)
+Todos os serviços têm limites de CPU e memória definidos via `deploy.resources.limits` no compose (honrado pelo `docker compose up`, não precisa swarm):
 
-VM 110 (`homelab`) tem o HD externo Seagate BUP Slim (`scsi1`) em passthrough. Como é USB, pode desconectar — sem tratamento, a VM falha ao iniciar.
-
-**Solução implementada:** script + systemd service + udev rules que gerenciam `scsi1` automaticamente.
-
-| Arquivo | Localização no Leon |
-|---|---|
-| Script | `/usr/local/bin/check-usb-disk-vm110.sh` |
-| Systemd service | `/etc/systemd/system/check-usb-disk-vm110.service` |
-| udev rules | `/etc/udev/rules.d/99-seagate-vm110.rules` |
-
-**Comportamento:**
-
-| Cenário | O que acontece |
-|---|---|
-| Boot com disco ausente | systemd service remove `scsi1` da config → VM inicia normalmente |
-| Boot com disco presente | systemd service garante `scsi1` na config |
-| Disco desconecta em runtime | udev REMOVE → `scsi1` removido da config |
-| Disco reconecta em runtime | udev ADD → `scsi1` reanexado na config |
-| Disco ausente com VM já rodando | VM continua mas perde I/O do disco — requer restart manual |
-
-> `qm set --delete scsi1` apenas remove a referência na config — **não apaga dados do disco**.
-
-**Verificar logs:**
-```bash
-journalctl -t check-usb-disk
+```yaml
+  radarr:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1g
 ```
 
-**Rodar manualmente:**
-```bash
-bash /usr/local/bin/check-usb-disk-vm110.sh
+**Como dimensionar:** os limites devem vir do **pico real** de cada container, não de chute. Com o monitoring stack ativo, consultar o pico no Prometheus:
+```promql
+max_over_time(netdata_cgroup_mem_usage_MiB_average[30d])   # pico de memória
+max_over_time(netdata_cgroup_cpu_percentage_average[30d])  # pico de CPU (100% = 1 core)
 ```
+Definir `limit ≈ pico × 1.5`.
 
-### CPU Governor (controle térmico)
+> **Cuidado:** limite de memória estourado → **OOM kill** do container. Ser generoso em serviços com picos legítimos (transcode de mídia, hashing de torrent, DB). Limite de CPU nunca mata — só faz throttle.
 
-Leon (Beelink Mini S, Intel N5095) roda quente. Default do Proxmox usa governor `performance` → CPU trava em ~2.8GHz mesmo ocioso, gerando calor à toa.
+> Limits protegem contra um container monopolizar o host (runaway); **não reduzem o trabalho total** (logo, não são solução para calor — para isso, reduzir o trabalho em si, ex: tuning do Netdata).
 
-**Solução:** governor `powersave` (driver `intel_pstate`) → escala dinâmico: idle desce a 800MHz, sob carga sobe até 2.9GHz (burst preservado). Ganho medido: **-5°C** (86°C → 81°C).
+---
 
-| Arquivo | Localização no Leon |
+## Otimizações Opcionais do Node Proxmox
+
+### USB Disk Passthrough Resiliente
+
+Quando uma VM usa passthrough de disco USB (`scsiN: /dev/disk/by-id/usb-...`), o disco pode desconectar e a VM falha ao iniciar (QEMU não suporta `nofail` em passthrough). Um script + systemd service + udev rules gerenciam o disco automaticamente.
+
+| Componente | Função |
 |---|---|
-| Systemd service | `/etc/systemd/system/cpu-governor.service` |
+| Script (`/usr/local/bin/check-usb-disk-<vmid>.sh`) | Adiciona/remove o disco da config conforme presença |
+| Systemd service (`Before=pve-guests.service`) | Roda no boot antes das VMs |
+| udev rules (`ACTION add/remove`) | Reanexa/remove em runtime |
+
+| Cenário | Comportamento |
+|---|---|
+| Boot sem disco | Remove `scsiN` da config → VM inicia |
+| Boot com disco | Garante `scsiN` na config |
+| Desconecta em runtime | udev remove `scsiN` |
+| Reconecta em runtime | udev reanexa `scsiN` |
+
+> `qm set --delete scsiN` só remove a referência na config — **não apaga dados do disco**. Exemplos prontos em `apps/scripts/` (adaptar VMID, serial do disco e interface).
+
+### CPU Governor (economia de energia / calor)
+
+Proxmox usa o governor `performance` por padrão (prioriza latência de VM), travando a CPU em freq alta mesmo ociosa. Para nodes 24/7, `powersave` (driver `intel_pstate`) reduz consumo e calor — escala dinâmico: cai no idle, sobe sob carga (burst preservado).
 
 ```bash
 # Verificar governor atual
@@ -891,20 +885,24 @@ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 echo powersave | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 ```
 
-> `powersave` no `intel_pstate` **não** trava na freq mínima — é dinâmico (≠ governor antigo do acpi-cpufreq). Burst sob carga mantido.
+Para persistir após reboot, criar um systemd service (`cpu-governor.service`) que aplica no boot:
 
-#### Resumo das otimizações térmicas (Leon)
+```ini
+# /etc/systemd/system/cpu-governor.service
+[Unit]
+Description=Set CPU governor to powersave
+After=multi-user.target
 
-Pico inicial: **88°C**. Mitigações aplicadas (cumulativas):
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'echo powersave | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'
+RemainAfterExit=yes
 
-| Otimização | Ganho | Onde |
-|---|---|---|
-| CPU governor `performance` → `powersave` | -5°C | `/etc/systemd/system/cpu-governor.service` |
-| Netdata tuning (cgroups 1s → 30s) | -8°C | `apps/monitoring-stack/netdata-tuning.conf` |
-| **Total via software** | **~-9°C** | 88°C → **79°C** |
-| Repaste (pendente) | -10 a -20°C esperado | pasta térmica MX-4/NT-H1 |
+[Install]
+WantedBy=multi-user.target
+```
 
-> **⚠️ Causa raiz térmica:** mesmo a 79°C, o teto é o cooling físico. Pasta de fábrica degradada (problema conhecido do N5095 em uso 24/7). Software já no limite; **repaste é a solução definitiva** (esperado ~60°C). Ganhos de software não somam linear — 88→79°C é o efeito combinado real medido.
+> `powersave` no `intel_pstate` **não** trava na freq mínima — é dinâmico (≠ governor antigo do acpi-cpufreq).
 
 ---
 

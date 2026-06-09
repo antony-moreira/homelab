@@ -10,6 +10,13 @@ services:
           memory: 512m
     image: ghcr.io/ajnart/homarr:latest
     restart: unless-stopped
+    healthcheck:
+      # homarr bind no IP do container, não em localhost — usar hostname -i
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://$(hostname -i):7575/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - traefik
     environment:
