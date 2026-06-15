@@ -20,7 +20,20 @@ PROXMOX_AUTH = f"PVEAPIToken=root@pam!homepage={os.environ['PROXMOX_TOKEN_SECRET
 LEON_URL = f"https://{os.environ['PROXMOX_LEON_IP']}:8006/api2/json"
 CLAIRE_URL = f"https://{os.environ['PROXMOX_CLAIRE_IP']}:8006/api2/json"
 
-docker_client = docker_sdk.from_env()
+# Docker é opcional — em hosts sem Docker (ex: LXC de recovery), o server ainda
+# sobe e as ferramentas Proxmox/SSH funcionam. As tools docker_* avisam se indisponível.
+class _DockerUnavailable:
+    def __getattr__(self, _):
+        raise RuntimeError(
+            "Docker indisponível neste host (sem socket Docker). "
+            "Use as ferramentas Proxmox/SSH para gerenciar a infra."
+        )
+
+try:
+    docker_client = docker_sdk.from_env()
+    docker_client.ping()
+except Exception:
+    docker_client = _DockerUnavailable()
 _auth_codes: dict = {}
 
 SSH_USER = os.environ.get("SSH_USER", "antony")
