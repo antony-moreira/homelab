@@ -27,7 +27,7 @@ if [ ! -d "$PASTA_ORIGEM" ]; then
   exit 1
 fi
 
-# Evita criar duplicata se ja rodou hoje
+# Avoid creating a duplicate if it already ran today
 if [ -f "$PASTA_DESTINO/$NOME_ARQUIVO" ]; then
   log "Backup de hoje ja existe: $NOME_ARQUIVO — abortando."
   exit 0
@@ -37,19 +37,19 @@ log "Iniciando backup de $PASTA_ORIGEM..."
 tar --ignore-failed-read -czf "$PASTA_DESTINO/$NOME_ARQUIVO" "${EXCLUIR[@]}" -C "$(dirname "$PASTA_ORIGEM")" "$(basename "$PASTA_ORIGEM")"
 log "Backup criado: $PASTA_DESTINO/$NOME_ARQUIVO ($(du -sh "$PASTA_DESTINO/$NOME_ARQUIVO" | cut -f1))"
 
-# --- Retenção ---
+# --- Retention ---
 log "Aplicando politica de retencao (ultimos $MANTER_RECENTES dias + 1 copia de ${MANTER_SEMANA_DIAS} dias)..."
 
 mapfile -t arquivos < <(ls -t "$PASTA_DESTINO"/apps_backup_????????.tar.gz 2>/dev/null)
 total=${#arquivos[@]}
 
 declare -A manter
-# Manter os N mais recentes
+# Keep the N most recent
 for (( i=0; i<MANTER_RECENTES && i<total; i++ )); do
   manter["${arquivos[$i]}"]=1
 done
 
-# Manter 1 arquivo com >= 7 dias (o mais proximo de 7 dias)
+# Keep 1 file that is >= 7 days old (the closest to 7 days)
 now=$(date +%s)
 best_diff=99999
 best_file=""
@@ -65,7 +65,7 @@ for f in "${arquivos[@]}"; do
 done
 [ -n "$best_file" ] && manter["$best_file"]=1
 
-# Remover o que nao esta na lista de manter
+# Remove whatever is not in the keep list
 for f in "${arquivos[@]}"; do
   if [ -z "${manter[$f]+x}" ]; then
     log "Removendo backup antigo: $(basename "$f")"

@@ -11,7 +11,7 @@ services:
     image: ghcr.io/ajnart/homarr:latest
     restart: unless-stopped
     healthcheck:
-      # homarr bind no IP do container, não em localhost — usar hostname -i
+      # homarr binds to the container IP, not localhost — use hostname -i
       test: ["CMD-SHELL", "wget -q -O /dev/null http://$(hostname -i):7575/ || exit 1"]
       interval: 30s
       timeout: 10s
@@ -55,13 +55,13 @@ services:
       - 5055:5055
     labels:
       - "traefik.enable=true"
-      # acesso local HTTPS direto (porta 443)
+      # direct local HTTPS access (port 443)
       - "traefik.http.routers.overseerr.rule=Host(`${OVERSEERR_DOMAIN}`) || Host(`${OVERSEERR_HOME_DOMAIN}`)"
       - "traefik.http.routers.overseerr.entrypoints=websecure"
       - "traefik.http.routers.overseerr.tls=true"
       - "traefik.http.routers.overseerr.tls.certresolver=cloudflare"
       - "traefik.http.routers.overseerr.service=overseerr"
-      # acesso via cloudflare tunnel (porta 8080)
+      # access via cloudflare tunnel (port 8080)
       - "traefik.http.routers.overseerr-tunnel.rule=Host(`${OVERSEERR_DOMAIN}`)"
       - "traefik.http.routers.overseerr-tunnel.entrypoints=tunnel"
       - "traefik.http.routers.overseerr-tunnel.service=overseerr"

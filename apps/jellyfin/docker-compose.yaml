@@ -24,13 +24,13 @@ services:
       - TZ=America/Sao_Paulo
     labels:
       - "traefik.enable=true"
-      # acesso local HTTPS direto (porta 443)
+      # direct local HTTPS access (port 443)
       - "traefik.http.routers.jellyfin.rule=Host(`${JELLYFIN_DOMAIN}`) || Host(`${JELLYFIN_HOME_DOMAIN}`)"
       - "traefik.http.routers.jellyfin.entrypoints=websecure"
       - "traefik.http.routers.jellyfin.tls=true"
       - "traefik.http.routers.jellyfin.tls.certresolver=cloudflare"
       - "traefik.http.routers.jellyfin.service=jellyfin"
-      # acesso via cloudflare tunnel (porta 8080)
+      # access via cloudflare tunnel (port 8080)
       - "traefik.http.routers.jellyfin-tunnel.rule=Host(`${JELLYFIN_DOMAIN}`)"
       - "traefik.http.routers.jellyfin-tunnel.entrypoints=tunnel"
       - "traefik.http.routers.jellyfin-tunnel.service=jellyfin"

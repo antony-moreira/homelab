@@ -20,8 +20,8 @@ PROXMOX_AUTH = f"PVEAPIToken=root@pam!homepage={os.environ['PROXMOX_TOKEN_SECRET
 LEON_URL = f"https://{os.environ['PROXMOX_LEON_IP']}:8006/api2/json"
 CLAIRE_URL = f"https://{os.environ['PROXMOX_CLAIRE_IP']}:8006/api2/json"
 
-# Docker é opcional — em hosts sem Docker (ex: LXC de recovery), o server ainda
-# sobe e as ferramentas Proxmox/SSH funcionam. As tools docker_* avisam se indisponível.
+# Docker is optional — on hosts without Docker (e.g. a recovery LXC), the server still
+# starts and the Proxmox/SSH tools work. The docker_* tools report when it's unavailable.
 class _DockerUnavailable:
     def __getattr__(self, _):
         raise RuntimeError(

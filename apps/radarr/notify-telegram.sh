@@ -1,10 +1,10 @@
 #!/bin/bash
 # Radarr → Telegram notification (Custom Script)
-# Configurar em Radarr: Settings → Connect → Custom Script → Path: /config/notify-telegram.sh
+# Configure in Radarr: Settings → Connect → Custom Script → Path: /config/notify-telegram.sh
 # Triggers: On Import (onDownload), On Upgrade
 #
-# IMPORTANTE: substituir token/chat_id pelos valores reais ao copiar para o servidor.
-# No servidor fica em: /home/antony/apps/radarr/notify-telegram.sh (montado como /config no container)
+# IMPORTANT: replace token/chat_id with the real values when copying to the server.
+# On the server it lives at: /home/antony/apps/radarr/notify-telegram.sh (mounted as /config in the container)
 BOT_TOKEN="SEU_BOT_TOKEN"
 CHAT_ID="SEU_CHAT_ID"
 

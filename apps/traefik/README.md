@@ -1,30 +1,30 @@
 # Traefik + Cloudflare Tunnel
 
-Reverse proxy com HTTPS automático via Cloudflare DNS challenge e acesso externo sem abrir portas no roteador.
+Reverse proxy with automatic HTTPS via Cloudflare DNS challenge, plus external access without opening ports on the router.
 
-## Pré-requisitos
+## Prerequisites
 
-- Docker e Docker Compose instalados
-- Domínio gerenciado pela Cloudflare
-- Conta Cloudflare (plano free suficiente)
+- Docker and Docker Compose installed
+- Domain managed by Cloudflare
+- Cloudflare account (free plan is enough)
 
-## Configuração inicial
+## Initial setup
 
-### 1. Rede Docker
+### 1. Docker network
 
 ```bash
 docker network create traefik
 ```
 
-### 2. Arquivo acme.json
+### 2. acme.json file
 
 ```bash
 touch acme.json && chmod 600 acme.json
 ```
 
-### 3. Variáveis de ambiente
+### 3. Environment variables
 
-Copie o `.env.example` para `.env` e preencha os valores:
+Copy `.env.example` to `.env` and fill in the values:
 
 ```bash
 cp .env.example .env
@@ -32,78 +32,78 @@ cp .env.example .env
 
 #### CF_DNS_API_TOKEN
 
-Token da API do Cloudflare com permissão de editar DNS (necessário para emitir certificados Let's Encrypt via DNS challenge).
+Cloudflare API token with permission to edit DNS (required to issue Let's Encrypt certificates via DNS challenge).
 
-1. Acesse [dash.cloudflare.com](https://dash.cloudflare.com) → My Profile → API Tokens
+1. Go to [dash.cloudflare.com](https://dash.cloudflare.com) → My Profile → API Tokens
 2. Create Token → Edit zone DNS (template)
-3. Cole o token gerado no `.env`
+3. Paste the generated token into `.env`
 
 #### CLOUDFLARE_TUNNEL_TOKEN
 
-Token do Cloudflare Tunnel (permite acesso externo sem abrir portas no roteador).
+Cloudflare Tunnel token (allows external access without opening ports on the router).
 
-1. Acesse [one.dash.cloudflare.com](https://one.dash.cloudflare.com) → Networks → Tunnels
-2. Create a tunnel → Cloudflared → dê um nome
-3. Copie o token exibido no comando `--token` e cole no `.env`
-4. Na aba **Rotas** do tunnel, adicione um aplicativo publicado:
+1. Go to [one.dash.cloudflare.com](https://one.dash.cloudflare.com) → Networks → Tunnels
+2. Create a tunnel → Cloudflared → give it a name
+3. Copy the token shown in the `--token` command and paste it into `.env`
+4. In the tunnel's **Routes** tab, add a published application:
    - Hostname: `traefik.seudominio.com`
-   - Serviço: `http://traefik:8080`
+   - Service: `http://traefik:8080`
 
 #### TRAEFIK_BASIC_AUTH
 
-Hash bcrypt da senha do dashboard. Gere com:
+Bcrypt hash of the dashboard password. Generate it with:
 
 ```bash
-docker run --rm httpd:alpine htpasswd -nbB admin 'suasenha'
+docker run --rm httpd:alpine htpasswd -nbB admin 'yourpassword'
 ```
 
-Escape os `$` trocando cada `$` por `$$` antes de colar no `.env`. Exemplo:
+Escape the `$` signs by replacing each `$` with `$$` before pasting into `.env`. Example:
 
 ```
-# saída do comando:
+# command output:
 admin:$2y$05$abc...
 
-# no .env:
+# in .env:
 TRAEFIK_BASIC_AUTH=admin:$$2y$$05$$abc...
 ```
 
-### 4. Ajustar caminhos no docker-compose.yaml
+### 4. Adjust paths in docker-compose.yaml
 
-Substitua `/home/antony/apps/traefik` pelo caminho absoluto onde os arquivos estão na sua máquina.
+Replace `/home/antony/apps/traefik` with the absolute path where the files live on your machine.
 
-### 5. Ajustar domínio
+### 5. Adjust the domain
 
-Substitua `traefik.tonho.app.br` pelo seu domínio nos labels do `docker-compose.yaml` e no `traefik.yml` (campo `email`).
+Replace `traefik.tonho.app.br` with your domain in the `docker-compose.yaml` labels and in `traefik.yml` (`email` field).
 
-## Subir os serviços
+## Start the services
 
 ```bash
 docker compose up -d
 ```
 
-## Expor um novo serviço
+## Exposing a new service
 
-Adicione estas labels no `docker-compose.yaml` do serviço desejado:
+Add these labels to the desired service's `docker-compose.yaml`:
 
 ```yaml
 labels:
   - "traefik.enable=true"
-  - "traefik.http.routers.NOME.rule=Host(`subdominio.seudominio.com`)"
-  - "traefik.http.routers.NOME.entrypoints=websecure"
-  - "traefik.http.routers.NOME.tls.certresolver=cloudflare"
+  - "traefik.http.routers.NAME.rule=Host(`subdomain.seudominio.com`)"
+  - "traefik.http.routers.NAME.entrypoints=websecure"
+  - "traefik.http.routers.NAME.tls.certresolver=cloudflare"
   - "traefik.docker.network=traefik"
 networks:
   traefik:
     external: true
 ```
 
-Para expor pelo Cloudflare Tunnel, adicione também a rota em **Networks → Tunnels → Rotas**:
-- Hostname: `subdominio.seudominio.com`
-- Serviço: `http://traefik:8080`
+To expose it through the Cloudflare Tunnel, also add the route under **Networks → Tunnels → Routes**:
+- Hostname: `subdomain.seudominio.com`
+- Service: `http://traefik:8080`
 
-E adicione um segundo router no serviço para o entrypoint tunnel:
+And add a second router to the service for the tunnel entrypoint:
 
 ```yaml
-  - "traefik.http.routers.NOME-tunnel.rule=Host(`subdominio.seudominio.com`)"
-  - "traefik.http.routers.NOME-tunnel.entrypoints=tunnel"
+  - "traefik.http.routers.NAME-tunnel.rule=Host(`subdomain.seudominio.com`)"
+  - "traefik.http.routers.NAME-tunnel.entrypoints=tunnel"
 ```

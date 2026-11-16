@@ -26,12 +26,12 @@ services:
       - SSH_HOST_HOMELAB=${SSH_HOST_HOMELAB}
     labels:
       - "traefik.enable=true"
-      # rota local (Tailscale) via HTTPS
+      # local route (Tailscale) via HTTPS
       - "traefik.http.routers.mcp-ssh-server.rule=Host(`${MCP_DOMAIN}`)"
       - "traefik.http.routers.mcp-ssh-server.entrypoints=websecure"
       - "traefik.http.routers.mcp-ssh-server.tls=true"
       - "traefik.http.routers.mcp-ssh-server.tls.certresolver=cloudflare"
-      # rota pública via Cloudflare Tunnel (entrypoint tunnel porta 8080)
+      # public route via Cloudflare Tunnel (tunnel entrypoint, port 8080)
       - "traefik.http.routers.mcp-ssh-server-tunnel.rule=Host(`${MCP_PUBLIC_DOMAIN}`)"
       - "traefik.http.routers.mcp-ssh-server-tunnel.entrypoints=tunnel"
       - "traefik.http.services.mcp-ssh-server.loadbalancer.server.port=8765"

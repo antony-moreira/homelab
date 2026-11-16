@@ -3,10 +3,10 @@ set -euo pipefail
 
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Iniciando limpeza de imagens Docker..."
 
-# IDs em uso por qualquer container (rodando ou parado)
+# IDs in use by any container (running or stopped)
 in_use_ids=$(docker ps -a --no-trunc --format "{{.ImageID}}" | sort -u)
 
-# IDs que possuem a tag latest (um mesmo ID pode ter multiplas tags)
+# IDs that have the latest tag (the same ID can have multiple tags)
 latest_ids=$(docker images --no-trunc --format "{{.ID}} {{.Tag}}" | awk '$2 == "latest" {print $1}' | sort -u)
 
 removidas=0
@@ -16,12 +16,12 @@ while IFS= read -r line; do
   id=$(echo "$line" | awk '{print $1}')
   ref=$(echo "$line" | awk '{print $2":"$3}')
 
-  # Pula se esse ID tambem esta taggeado como latest
+  # Skip if this ID is also tagged as latest
   if echo "$latest_ids" | grep -qF "$id"; then
     continue
   fi
 
-  # Pula se em uso por algum container
+  # Skip if in use by any container
   if echo "$in_use_ids" | grep -qF "$id"; then
     echo "  Em uso, pulando: $ref"
     continue
@@ -37,7 +37,7 @@ while IFS= read -r line; do
 
 done < <(docker images --no-trunc --format "{{.ID}} {{.Repository}} {{.Tag}}" | grep -v " latest$" | grep -v " <none>$")
 
-# Limpa imagens dangling (sem tag)
+# Clean up dangling (untagged) images
 dangling=$(docker images -f "dangling=true" -q | wc -l)
 if [ "$dangling" -gt 0 ]; then
   echo "  Removendo $dangling imagem(ns) dangling..."
